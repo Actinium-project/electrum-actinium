@@ -34,7 +34,7 @@ from functools import wraps
 from decimal import Decimal
 
 from .import util
-from .util import bfh, bh2u, format_satoshis, json_decode, print_error
+from .util import bfh, bh2u, format_satoshis, json_decode
 from .import bitcoin
 from .bitcoin import is_address,  hash_160, COIN, TYPE_ADDRESS
 from .i18n import _
@@ -81,8 +81,8 @@ def command(s):
             wallet = args[0].wallet
             password = kwargs.get('password')
             if c.requires_wallet and wallet is None:
-                raise BaseException("wallet not loaded. Use 'electrum daemon load_wallet'")
-            if c.requires_password and password is None and wallet.has_password():
+                raise BaseException("wallet not loaded. Use 'electrum-xzc daemon load_wallet'")
+            if c.requires_password and password is None and wallet.storage.get('use_encryption'):
                 return {'error': 'Password required' }
             return func(*args, **kwargs)
         return func_wrapper
@@ -130,8 +130,8 @@ class Commands:
     @command('wn')
     def restore(self, text):
         """Restore a wallet from text. Text can be a seed phrase, a master
-        public key, a master private key, a list of bitcoin addresses
-        or bitcoin private keys. If you want to be prompted for your
+        public key, a master private key, a list of Zcoin addresses
+        or Zcoin private keys. If you want to be prompted for your
         seed, type '?' or ':' (concealed) """
         raise BaseException('Not a JSON-RPC command')
 
@@ -175,8 +175,7 @@ class Commands:
         """Return the transaction history of any address. Note: This is a
         walletless server query, results are not checked by SPV.
         """
-        sh = bitcoin.address_to_scripthash(address)
-        return self.network.synchronous_get(('blockchain.scripthash.get_history', [sh]))
+        return self.network.synchronous_get(('blockchain.address.get_history', [address]))
 
     @command('w')
     def listunspent(self):
@@ -193,8 +192,7 @@ class Commands:
         """Returns the UTXO list of any address. Note: This
         is a walletless server query, results are not checked by SPV.
         """
-        sh = bitcoin.address_to_scripthash(address)
-        return self.network.synchronous_get(('blockchain.scripthash.listunspent', [sh]))
+        return self.network.synchronous_get(('blockchain.address.listunspent', [address]))
 
     @command('')
     def serialize(self, jsontx):
@@ -288,7 +286,7 @@ class Commands:
     @command('')
     def dumpprivkeys(self):
         """Deprecated."""
-        return "This command is deprecated. Use a pipe instead: 'electrum listaddresses | electrum getprivatekeys - '"
+        return "This command is deprecated. Use a pipe instead: 'electrum-xzc listaddresses | electrum-xzc getprivatekeys - '"
 
     @command('')
     def validateaddress(self, address):
@@ -316,10 +314,18 @@ class Commands:
         """Return the balance of any address. Note: This is a walletless
         server query, results are not checked by SPV.
         """
-        sh = bitcoin.address_to_scripthash(address)
-        out = self.network.synchronous_get(('blockchain.scripthash.get_balance', [sh]))
+        out = self.network.synchronous_get(('blockchain.address.get_balance', [address]))
         out["confirmed"] =  str(Decimal(out["confirmed"])/COIN)
         out["unconfirmed"] =  str(Decimal(out["unconfirmed"])/COIN)
+        return out
+
+    @command('n')
+    def getproof(self, address):
+        """Get Merkle branch of an address in the UTXO set"""
+        p = self.network.synchronous_get(('blockchain.address.get_proof', [address]))
+        out = []
+        for i,s in p:
+            out.append(i)
         return out
 
     @command('n')
@@ -440,24 +446,50 @@ class Commands:
         return tx.as_dict()
 
     @command('w')
-    def history(self, year=None, show_addresses=False, show_fiat=False):
+    def history(self):
         """Wallet history. Returns the transaction history of your wallet."""
-        kwargs = {'show_addresses': show_addresses}
-        if year:
-            import time
-            start_date = datetime.datetime(year, 1, 1)
-            end_date = datetime.datetime(year+1, 1, 1)
-            kwargs['from_timestamp'] = time.mktime(start_date.timetuple())
-            kwargs['to_timestamp'] = time.mktime(end_date.timetuple())
-        if show_fiat:
-            from .exchange_rate import FxThread
-            fx = FxThread(self.config, None)
-            kwargs['fx'] = fx
-        return self.wallet.export_history(**kwargs)
+        balance = 0
+        out = []
+        for item in self.wallet.get_history():
+            tx_hash, height, conf, timestamp, value, balance = item
+            if timestamp:
+                date = datetime.datetime.fromtimestamp(timestamp).isoformat(' ')[:-3]
+            else:
+                date = "----"
+            label = self.wallet.get_label(tx_hash)
+            tx = self.wallet.transactions.get(tx_hash)
+            tx.deserialize()
+            input_addresses = []
+            output_addresses = []
+            for x in tx.inputs():
+                if x['type'] == 'coinbase': continue
+                addr = x.get('address')
+                if addr == None: continue
+                if addr == "(pubkey)":
+                    prevout_hash = x.get('prevout_hash')
+                    prevout_n = x.get('prevout_n')
+                    _addr = self.wallet.find_pay_to_pubkey_address(prevout_hash, prevout_n)
+                    if _addr:
+                        addr = _addr
+                input_addresses.append(addr)
+            for addr, v in tx.get_outputs():
+                output_addresses.append(addr)
+            out.append({
+                'txid': tx_hash,
+                'timestamp': timestamp,
+                'date': date,
+                'input_addresses': input_addresses,
+                'output_addresses': output_addresses,
+                'label': label,
+                'value': str(Decimal(value)/COIN) if value is not None else None,
+                'height': height,
+                'confirmations': conf
+            })
+        return out
 
     @command('w')
     def setlabel(self, key, label):
-        """Assign a label to an item. Item may be a bitcoin address or a
+        """Assign a label to an item. Item may be a Zcoin address or a
         transaction ID"""
         self.wallet.set_label(key, label)
 
@@ -535,7 +567,7 @@ class Commands:
             PR_PAID: 'Paid',
             PR_EXPIRED: 'Expired',
         }
-        out['amount (BTC)'] = format_satoshis(out.get('amount'))
+        out['amount (XZC)'] = format_satoshis(out.get('amount'))
         out['status'] = pr_str[out.get('status', PR_UNKNOWN)]
         return out
 
@@ -601,8 +633,7 @@ class Commands:
     def addtransaction(self, tx):
         """ Add a transaction to the wallet history """
         tx = Transaction(tx)
-        if not self.wallet.add_transaction(tx.txid(), tx):
-            return False
+        self.wallet.add_transaction(tx.txid(), tx)
         self.wallet.save_transactions()
         return tx.txid()
 
@@ -662,8 +693,8 @@ class Commands:
 
 param_descriptions = {
     'privkey': 'Private key. Type \'?\' to get a prompt.',
-    'destination': 'Bitcoin address, contact or alias',
-    'address': 'Bitcoin address',
+    'destination': 'Zcoin address, contact or alias',
+    'address': 'Zcoin address',
     'seed': 'Seed phrase',
     'txid': 'Transaction ID',
     'pos': 'Position',
@@ -673,8 +704,8 @@ param_descriptions = {
     'pubkey': 'Public key',
     'message': 'Clear text message. Use quotes if it contains spaces.',
     'encrypted': 'Encrypted message',
-    'amount': 'Amount to be sent (in BTC). Type \'!\' to send the maximum available.',
-    'requested_amount': 'Requested amount (in BTC).',
+    'amount': 'Amount to be sent (in XZC). Type \'!\' to send the maximum available.',
+    'requested_amount': 'Requested amount (in XZC).',
     'outputs': 'list of ["address", amount]',
     'redeem_script': 'redeem script (hexadecimal)',
 }
@@ -691,7 +722,7 @@ command_options = {
     'labels':      ("-l", "Show the labels of listed addresses"),
     'nocheck':     (None, "Do not verify aliases"),
     'imax':        (None, "Maximum number of inputs"),
-    'fee':         ("-f", "Transaction fee (in BTC)"),
+    'fee':         ("-f", "Transaction fee (in XZC)"),
     'from_addr':   ("-F", "Source address (must be a wallet address; use sweep to spend from non-wallet address)."),
     'change_addr': ("-c", "Change address. Default is a spare address, or the source address if it's not in the wallet"),
     'nbits':       (None, "Number of bits of entropy"),
@@ -710,9 +741,6 @@ command_options = {
     'pending':     (None, "Show only pending requests."),
     'expired':     (None, "Show only expired requests."),
     'paid':        (None, "Show only paid requests."),
-    'show_addresses': (None, "Show input and output addresses"),
-    'show_fiat':   (None, "Show fiat value of transactions"),
-    'year':        (None, "Show history for a given year"),
 }
 
 
@@ -723,7 +751,6 @@ arg_types = {
     'num': int,
     'nbits': int,
     'imax': int,
-    'year': int,
     'entropy': int,
     'tx': tx_from_str,
     'pubkeys': json_loads,
@@ -741,10 +768,10 @@ config_variables = {
         'requests_dir': 'directory where a bip70 file will be written.',
         'ssl_privkey': 'Path to your SSL private key, needed to sign the request.',
         'ssl_chain': 'Chain of SSL certificates, needed for signed requests. Put your certificate at the top and the root CA at the end',
-        'url_rewrite': 'Parameters passed to str.replace(), in order to create the r= part of bitcoin: URIs. Example: \"(\'file:///var/www/\',\'https://electrum.org/\')\"',
+        'url_rewrite': 'Parameters passed to str.replace(), in order to create the r= part of zcoin: URIs. Example: \"(\'file:///var/www/\',\'https://electrum-xzc.org/\')\"',
     },
     'listrequests':{
-        'url_rewrite': 'Parameters passed to str.replace(), in order to create the r= part of bitcoin: URIs. Example: \"(\'file:///var/www/\',\'https://electrum.org/\')\"',
+        'url_rewrite': 'Parameters passed to str.replace(), in order to create the r= part of zcoin: URIs. Example: \"(\'file:///var/www/\',\'https://electrum-xzc.org/\')\"',
     }
 }
 
@@ -787,7 +814,7 @@ def subparser_call(self, parser, namespace, values, option_string=None):
         parser = self._name_parser_map[parser_name]
     except KeyError:
         tup = parser_name, ', '.join(self._name_parser_map)
-        msg = _('unknown parser {!r} (choices: {})').format(*tup)
+        msg = _('unknown parser %r (choices: %s)') % tup
         raise ArgumentError(self, msg)
     # parse all the remaining options into the namespace
     # store any unrecognized options on the object, so that the top
@@ -809,19 +836,19 @@ def add_global_options(parser):
     group = parser.add_argument_group('global options')
     group.add_argument("-v", "--verbose", action="store_true", dest="verbose", default=False, help="Show debugging information")
     group.add_argument("-D", "--dir", dest="electrum_path", help="electrum directory")
-    group.add_argument("-P", "--portable", action="store_true", dest="portable", default=False, help="Use local 'electrum_data' directory")
+    group.add_argument("-P", "--portable", action="store_true", dest="portable", default=False, help="Use local 'electrum-xzc_data' directory")
     group.add_argument("-w", "--wallet", dest="wallet_path", help="wallet path")
     group.add_argument("--testnet", action="store_true", dest="testnet", default=False, help="Use Testnet")
 
 def get_parser():
     # create main parser
     parser = argparse.ArgumentParser(
-        epilog="Run 'electrum help <command>' to see the help for a command")
+        epilog="Run 'electrum-xzc help <command>' to see the help for a command")
     add_global_options(parser)
     subparsers = parser.add_subparsers(dest='cmd', metavar='<command>')
     # gui
     parser_gui = subparsers.add_parser('gui', description="Run Electrum's Graphical User Interface.", help="Run GUI (default)")
-    parser_gui.add_argument("url", nargs='?', default=None, help="bitcoin URI (or bip70 file)")
+    parser_gui.add_argument("url", nargs='?', default=None, help="zcoin URI (or bip70 file)")
     parser_gui.add_argument("-g", "--gui", dest="gui", help="select graphical user interface", choices=['qt', 'kivy', 'text', 'stdio'])
     parser_gui.add_argument("-o", "--offline", action="store_true", dest="offline", default=False, help="Run offline")
     parser_gui.add_argument("-m", action="store_true", dest="hide_gui", default=False, help="hide GUI on startup")

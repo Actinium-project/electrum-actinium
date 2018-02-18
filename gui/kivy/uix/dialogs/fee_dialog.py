@@ -3,8 +3,8 @@ from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 
-from electrum.util import fee_levels
-from electrum_gui.kivy.i18n import _
+from electrum_xzc.util import fee_levels
+from electrum_xzc_gui.kivy.i18n import _
 
 Builder.load_string('''
 <FeeDialog@Popup>
@@ -18,17 +18,7 @@ Builder.load_string('''
             orientation: 'horizontal'
             size_hint: 1, 0.5
             Label:
-                text: (_('Target') if dynfees.active else _('Fixed rate')) + ':'
-            Label:
-                id: fee_target
-                text: ''
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1, 0.5
-            Label:
-                text: (_('Current rate') if dynfees.active else _('Estimate')) + ':'
-            Label:
-                id: fee_estimate
+                id: fee_per_kb
                 text: ''
         Slider:
             id: slider
@@ -42,15 +32,7 @@ Builder.load_string('''
                 text: _('Dynamic Fees')
             CheckBox:
                 id: dynfees
-                on_active: root.on_dynfees(self.active)
-        BoxLayout:
-            orientation: 'horizontal'
-            size_hint: 1, 0.5
-            Label:
-                text: _('Use mempool')
-            CheckBox:
-                id: mempool
-                on_active: root.on_mempool(self.active)
+                on_active: root.on_checkbox(self.active)
         Widget:
             size_hint: 1, 1
         BoxLayout:
@@ -78,44 +60,45 @@ class FeeDialog(Factory.Popup):
         self.config = config
         self.fee_rate = self.config.fee_per_kb()
         self.callback = callback
-        self.mempool = self.config.use_mempool_fees()
-        self.dynfees = self.config.is_dynfee()
-        self.ids.mempool.active = self.mempool
+        self.dynfees = self.config.get('dynamic_fees', True)
         self.ids.dynfees.active = self.dynfees
         self.update_slider()
         self.update_text()
 
     def update_text(self):
         value = int(self.ids.slider.value)
-        target, estimate = self.get_fee_text(value)
-        self.ids.fee_target.text = target
-        self.ids.fee_estimate.text = estimate
+        self.ids.fee_per_kb.text = self.get_fee_text(value)
 
     def update_slider(self):
         slider = self.ids.slider
-        maxp, pos, fee_rate = self.config.get_fee_slider(self.dynfees, self.mempool)
-        slider.range = (0, maxp)
-        slider.step = 1
-        slider.value = pos
-
-    def get_fee_text(self, pos):
-        dyn = self.dynfees
-        mempool = self.mempool
-        if dyn:
-            fee_rate = self.config.depth_to_fee(pos) if mempool else self.config.eta_to_fee(pos)
+        if self.dynfees:
+            slider.range = (0, 4)
+            slider.step = 1
+            slider.value = self.config.get('fee_level', 2)
         else:
-            fee_rate = self.config.static_fee(pos)
-        return self.config.get_fee_text(pos, dyn, mempool, fee_rate)
+            slider.range = (0, 9)
+            slider.step = 1
+            slider.value = self.config.static_fee_index(self.fee_rate)
+
+    def get_fee_text(self, value):
+        if self.ids.dynfees.active:
+            tooltip = fee_levels[value]
+            if self.config.has_fee_estimates():
+                dynfee = self.config.dynfee(value)
+                tooltip += '\n' + (self.app.format_amount_and_units(dynfee)) + '/kB'
+        else:
+            fee_rate = self.config.static_fee(value)
+            tooltip = self.app.format_amount_and_units(fee_rate) + '/kB'
+            if self.config.has_fee_estimates():
+                i = self.config.reverse_dynfee(fee_rate)
+                tooltip += '\n' + (_('low fee') if i < 0 else 'Within %d blocks'%i)
+        return tooltip
 
     def on_ok(self):
         value = int(self.ids.slider.value)
         self.config.set_key('dynamic_fees', self.dynfees, False)
-        self.config.set_key('mempool_fees', self.mempool, False)
         if self.dynfees:
-            if self.mempool:
-                self.config.set_key('depth_level', value, True)
-            else:
-                self.config.set_key('fee_level', value, True)
+            self.config.set_key('fee_level', value, True)
         else:
             self.config.set_key('fee_per_kb', self.config.static_fee(value), True)
         self.callback()
@@ -123,12 +106,7 @@ class FeeDialog(Factory.Popup):
     def on_slider(self, value):
         self.update_text()
 
-    def on_dynfees(self, b):
+    def on_checkbox(self, b):
         self.dynfees = b
-        self.update_slider()
-        self.update_text()
-
-    def on_mempool(self, b):
-        self.mempool = b
         self.update_slider()
         self.update_text()

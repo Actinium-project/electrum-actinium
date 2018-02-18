@@ -25,7 +25,6 @@
 
 import signal
 import sys
-import traceback
 
 
 try:
@@ -38,14 +37,14 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import PyQt5.QtCore as QtCore
 
-from electrum.i18n import _, set_language
-from electrum.plugins import run_hook
-from electrum import WalletStorage
-# from electrum.synchronizer import Synchronizer
-# from electrum.verifier import SPV
-# from electrum.util import DebugMem
-from electrum.util import UserCancelled, print_error
-# from electrum.wallet import Abstract_Wallet
+from electrum_xzc.i18n import _, set_language
+from electrum_xzc.plugins import run_hook
+from electrum_xzc import WalletStorage
+# from electrum_xzc.synchronizer import Synchronizer
+# from electrum_xzc.verifier import SPV
+# from electrum_xzc.util import DebugMem
+from electrum_xzc.util import UserCancelled, print_error
+# from electrum_xzc.wallet import Abstract_Wallet
 
 from .installwizard import InstallWizard, GoBack
 
@@ -95,8 +94,6 @@ class ElectrumGui:
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_X11InitThreads)
         if hasattr(QtCore.Qt, "AA_ShareOpenGLContexts"):
             QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_ShareOpenGLContexts)
-        if hasattr(QGuiApplication, 'setDesktopFileName'):
-            QGuiApplication.setDesktopFileName('electrum.desktop')
         self.config = config
         self.daemon = daemon
         self.plugins = plugins
@@ -110,7 +107,7 @@ class ElectrumGui:
         # init tray
         self.dark_icon = self.config.get("dark_icon", False)
         self.tray = QSystemTrayIcon(self.tray_icon(), None)
-        self.tray.setToolTip('Electrum')
+        self.tray.setToolTip('Electrum-XZC')
         self.tray.activated.connect(self.tray_activated)
         self.build_tray_menu()
         self.tray.show()
@@ -132,7 +129,7 @@ class ElectrumGui:
             submenu.addAction(_("Close"), window.close)
         m.addAction(_("Dark/Light"), self.toggle_tray_icon)
         m.addSeparator()
-        m.addAction(_("Exit Electrum"), self.close)
+        m.addAction(_("Exit Electrum-XZC"), self.close)
 
     def tray_icon(self):
         if self.dark_icon:
@@ -193,10 +190,8 @@ class ElectrumGui:
         else:
             try:
                 wallet = self.daemon.load_wallet(path, None)
-            except BaseException as e:
-                traceback.print_exc(file=sys.stdout)
-                d = QMessageBox(QMessageBox.Warning, _('Error'),
-                                _('Cannot load wallet:') + '\n' + str(e))
+            except  BaseException as e:
+                d = QMessageBox(QMessageBox.Warning, _('Error'), 'Cannot load wallet:\n' + str(e))
                 d.exec_()
                 return
             if not wallet:
@@ -213,14 +208,7 @@ class ElectrumGui:
                     return
                 wallet.start_threads(self.daemon.network)
                 self.daemon.add_wallet(wallet)
-            try:
-                w = self.create_window_for_wallet(wallet)
-            except BaseException as e:
-                traceback.print_exc(file=sys.stdout)
-                d = QMessageBox(QMessageBox.Warning, _('Error'),
-                                _('Cannot create window for wallet:') + '\n' + str(e))
-                d.exec_()
-                return
+            w = self.create_window_for_wallet(wallet)
         if uri:
             w.pay_to_URI(uri)
         w.bring_to_top()
@@ -253,7 +241,8 @@ class ElectrumGui:
             return
         except GoBack:
             return
-        except BaseException as e:
+        except:
+            import traceback
             traceback.print_exc(file=sys.stdout)
             return
         self.timer.start()

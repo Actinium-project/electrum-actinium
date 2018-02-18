@@ -3,18 +3,18 @@ from kivy.factory import Factory
 from kivy.properties import ObjectProperty
 from kivy.lang import Builder
 
-from electrum.util import base_units
-from electrum.i18n import languages
-from electrum_gui.kivy.i18n import _
-from electrum.plugins import run_hook
-from electrum import coinchooser
-from electrum.util import fee_levels
+from electrum_xzc.util import base_units
+from electrum_xzc.i18n import languages
+from electrum_xzc_gui.kivy.i18n import _
+from electrum_xzc.plugins import run_hook
+from electrum_xzc import coinchooser
+from electrum_xzc.util import fee_levels
 
 from .choice_dialog import ChoiceDialog
 
 Builder.load_string('''
 #:import partial functools.partial
-#:import _ electrum_gui.kivy.i18n._
+#:import _ electrum_xzc_gui.kivy.i18n._
 
 <SettingsDialog@Popup>
     id: settings
@@ -46,13 +46,13 @@ Builder.load_string('''
                 SettingsItem:
                     bu: app.base_unit
                     title: _('Denomination') + ': ' + self.bu
-                    description: _("Base unit for Bitcoin amounts.")
+                    description: _("Base unit for Zcoin amounts.")
                     action: partial(root.unit_dialog, self)
                 CardSeparator
                 SettingsItem:
                     status: root.fee_status()
                     title: _('Fees') + ': ' + self.status
-                    description: _("Fees paid to the Bitcoin miners.")
+                    description: _("Fees paid to the Zcoin miners.")
                     action: partial(root.fee_dialog, self)
                 CardSeparator
                 SettingsItem:
@@ -204,7 +204,10 @@ class SettingsDialog(Factory.Popup):
         d.open()
 
     def fee_status(self):
-        return self.config.get_fee_status()
+        if self.config.get('dynamic_fees', True):
+            return fee_levels[self.config.get('fee_level', 2)]
+        else:
+            return self.app.format_amount_and_units(self.config.fee_per_kb()) + '/kB'
 
     def fee_dialog(self, label, dt):
         if self._fee_dialog is None:

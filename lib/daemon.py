@@ -25,8 +25,6 @@
 import ast
 import os
 import time
-import traceback
-import sys
 
 # from jsonrpc import JSONRPCResponseManager
 import jsonrpclib
@@ -123,12 +121,13 @@ class Daemon(DaemonThread):
         self.config = config
         if config.get('offline'):
             self.network = None
+            self.fx = None
         else:
             self.network = Network(config)
             self.network.start()
-        self.fx = FxThread(config, self.network)
-        if self.network:
+            self.fx = FxThread(config, self.network)
             self.network.add_jobs([self.fx])
+
         self.gui = None
         self.wallets = {}
         # Setup JSONRPC server
@@ -264,7 +263,7 @@ class Daemon(DaemonThread):
             path = config.get_wallet_path()
             wallet = self.wallets.get(path)
             if wallet is None:
-                return {'error': 'Wallet "%s" is not loaded. Use "electrum daemon load_wallet"'%os.path.basename(path) }
+                return {'error': 'Wallet "%s" is not loaded. Use "electrum-xzc daemon load_wallet"'%os.path.basename(path) }
         else:
             wallet = None
         # arguments passed to function
@@ -300,10 +299,6 @@ class Daemon(DaemonThread):
         gui_name = config.get('gui', 'qt')
         if gui_name in ['lite', 'classic']:
             gui_name = 'qt'
-        gui = __import__('electrum_gui.' + gui_name, fromlist=['electrum_gui'])
+        gui = __import__('electrum_xzc_gui.' + gui_name, fromlist=['electrum_xzc_gui'])
         self.gui = gui.ElectrumGui(config, self, plugins)
-        try:
-            self.gui.main()
-        except BaseException as e:
-            traceback.print_exc(file=sys.stdout)
-            # app will exit now
+        self.gui.main()

@@ -30,12 +30,12 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-from electrum.bitcoin import base_encode
-from electrum.i18n import _
-from electrum.plugins import run_hook
+from electrum_xzc.bitcoin import base_encode
+from electrum_xzc.i18n import _
+from electrum_xzc.plugins import run_hook
 
-from electrum.util import bfh
-from electrum.wallet import UnrelatedTransactionException
+from electrum_xzc.util import bfh
+from electrum_xzc.wallet import UnrelatedTransactionException
 
 from .util import *
 
@@ -179,13 +179,10 @@ class TxDialog(QDialog, MessageBoxMixin):
         self.main_window.sign_tx(self.tx, sign_done)
 
     def save(self):
-        if not self.wallet.add_transaction(self.tx.txid(), self.tx):
-            self.show_error(_("Transaction could not be saved. It conflicts with current history."))
-            return
+        self.wallet.add_transaction(self.tx.txid(), self.tx)
         self.wallet.save_transactions(write=True)
 
-        # need to update at least: history_list, utxo_list, address_list
-        self.main_window.need_update.set()
+        self.main_window.history_list.update()
 
         self.save_button.setDisabled(True)
         self.show_message(_("Transaction saved successfully"))
@@ -221,11 +218,11 @@ class TxDialog(QDialog, MessageBoxMixin):
 
         if timestamp:
             time_str = datetime.datetime.fromtimestamp(timestamp).isoformat(' ')[:-3]
-            self.date_label.setText(_("Date: {}").format(time_str))
+            self.date_label.setText(_("Date: %s")%time_str)
             self.date_label.show()
         elif exp_n:
-            text = '%.2f MB'%(exp_n/1000000)
-            self.date_label.setText(_('Position in mempool') + ': ' + text + ' ' + _('from tip'))
+            text = '%d blocks'%(exp_n) if exp_n > 0 else _('unknown (low fee)')
+            self.date_label.setText(_('Expected confirmation time') + ': ' + text)
             self.date_label.show()
         else:
             self.date_label.hide()

@@ -13,7 +13,9 @@ echo "Clearing $here/build and $here/dist..."
 rm "$here"/build/* -rf
 rm "$here"/dist/* -rf
 
-$here/prepare-wine.sh || exit 1
+$here/prepare-wine.sh && \
+$here/prepare-pyinstaller.sh && \
+$here/prepare-hw.sh || exit 1
 
 echo "Resetting modification time in C:\Python..."
 # (Because of some bugs in pyinstaller)

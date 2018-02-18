@@ -1,0 +1,17 @@
+# If you want electrum to appear in a linux app launcher ("start menu"), install this by doing:
+# sudo desktop-file-install electrum.desktop
+
+[Desktop Entry]
+Comment=Lightweight Zcoin Client
+Exec=electrum-xzc %u
+GenericName[en_US]=Zcoin Wallet
+GenericName=Zcoin Wallet
+Icon=electrum-xzc
+Name[en_US]=Electrum Zcoin Wallet
+Name=Electrum Zcoin Wallet
+Categories=Finance;Network;
+StartupNotify=false
+Terminal=false
+Type=Application
+MimeType=x-scheme-handler/zcoin;
+

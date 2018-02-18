@@ -72,22 +72,28 @@ done
 # upgrade pip
 $PYTHON -m pip install pip --upgrade
 
-# Install pywin32-ctypes (needed by pyinstaller)
-$PYTHON -m pip install pywin32-ctypes==0.1.2
+# Install PyWin32
+$PYTHON -m pip install pypiwin32
 
-# install PySocks
-$PYTHON -m pip install win_inet_pton==1.0.1
+# Install PyQt
+$PYTHON -m pip install PyQt5
 
-$PYTHON -m pip install -r ../../deterministic-build/requirements-binaries.txt
+## Install pyinstaller
+#$PYTHON -m pip install pyinstaller==3.3
 
-# Install PyInstaller
-
-$PYTHON -m pip install git+https://github.com/ecdsa/pyinstaller@fix_2952
 
 # Install ZBar
 #wget -q -O zbar.exe "https://sourceforge.net/projects/zbar/files/zbar/0.10/zbar-0.10-setup.exe/download"
 #wine zbar.exe
 
+# install Cryptodome
+$PYTHON -m pip install pycryptodomex
+
+# install PySocks
+$PYTHON -m pip install win_inet_pton
+
+# install websocket (python2)
+$PYTHON -m pip install websocket-client
 
 # Upgrade setuptools (so Electrum can be installed later)
 $PYTHON -m pip install setuptools --upgrade
@@ -104,5 +110,22 @@ wine nsis.exe /S
 
 # add dlls needed for pyinstaller:
 cp $WINEPREFIX/drive_c/python$PYTHON_VERSION/Lib/site-packages/PyQt5/Qt/bin/* $WINEPREFIX/drive_c/python$PYTHON_VERSION/
+
+
+# Install MinGW
+wget http://downloads.sourceforge.net/project/mingw/Installer/mingw-get-setup.exe
+wine mingw-get-setup.exe
+
+echo "add c:\MinGW\bin to PATH using regedit"
+echo "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
+regedit
+
+wine mingw-get install gcc
+wine mingw-get install mingw-utils
+wine mingw-get install mingw32-libz
+
+printf "[build]\ncompiler=mingw32\n" > $WINEPREFIX/drive_c/python$PYTHON_VERSION/Lib/distutils/distutils.cfg
+
+$PYTHON -m pip install scrypt
 
 echo "Wine is configured. Please run prepare-pyinstaller.sh"

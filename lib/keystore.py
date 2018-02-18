@@ -45,10 +45,6 @@ class KeyStore(PrintError):
     def can_import(self):
         return False
 
-    def may_have_password(self):
-        """Returns whether the keystore can be encrypted with a password."""
-        raise NotImplementedError()
-
     def get_tx_derivations(self, tx):
         keypairs = {}
         for txin in tx.inputs():
@@ -119,6 +115,9 @@ class Imported_KeyStore(Software_KeyStore):
 
     def is_deterministic(self):
         return False
+
+    def can_change_password(self):
+        return True
 
     def get_master_public_key(self):
         return None
@@ -196,6 +195,9 @@ class Deterministic_KeyStore(Software_KeyStore):
 
     def is_watching_only(self):
         return not self.has_seed()
+
+    def can_change_password(self):
+        return not self.is_watching_only()
 
     def add_seed(self, seed):
         if self.seed:
@@ -520,13 +522,9 @@ class Hardware_KeyStore(KeyStore, Xpub):
         assert not self.has_seed()
         return False
 
-    def get_password_for_storage_encryption(self):
-        from .storage import get_derivation_used_for_hw_device_encryption
-        client = self.plugin.get_client(self)
-        derivation = get_derivation_used_for_hw_device_encryption()
-        xpub = client.get_xpub(derivation, "standard")
-        password = self.get_pubkey_from_xpub(xpub, ())
-        return password
+    def can_change_password(self):
+        return False
+
 
 
 def bip39_normalize_passphrase(passphrase):
@@ -685,7 +683,7 @@ is_bip32_key = lambda x: is_xprv(x) or is_xpub(x)
 
 
 def bip44_derivation(account_id, bip43_purpose=44):
-    coin = 1 if bitcoin.NetworkConstants.TESTNET else 0
+    coin = 1 if bitcoin.NetworkConstants.TESTNET else 2
     return "m/%d'/%d'/%d'" % (bip43_purpose, coin, int(account_id))
 
 def from_seed(seed, passphrase, is_p2sh):

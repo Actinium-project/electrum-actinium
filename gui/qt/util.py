@@ -6,7 +6,7 @@ import queue
 from collections import namedtuple
 from functools import partial
 
-from electrum.i18n import _
+from electrum_xzc.i18n import _
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
@@ -21,7 +21,7 @@ else:
 
 dialogs = []
 
-from electrum.paymentrequest import PR_UNPAID, PR_PAID, PR_EXPIRED
+from electrum_xzc.paymentrequest import PR_UNPAID, PR_PAID, PR_EXPIRED
 
 pr_icons = {
     PR_UNPAID:":icons/unpaid.png",
@@ -389,9 +389,7 @@ class MyTreeWidget(QTreeWidget):
         self.editor = None
         self.pending_update = False
         if editable_columns is None:
-            editable_columns = {stretch_column}
-        else:
-            editable_columns = set(editable_columns)
+            editable_columns = [stretch_column]
         self.editable_columns = editable_columns
         self.setItemDelegate(ElectrumItemDelegate(self))
         self.itemDoubleClicked.connect(self.on_doubleclick)
@@ -480,12 +478,8 @@ class MyTreeWidget(QTreeWidget):
             self.pending_update = True
         else:
             self.setUpdatesEnabled(False)
-            scroll_pos = self.verticalScrollBar().value()
             self.on_update()
             self.setUpdatesEnabled(True)
-            # To paint the list before resetting the scroll position
-            self.parent.app.processEvents()
-            self.verticalScrollBar().setValue(scroll_pos)
         if self.current_filter:
             self.filter(self.current_filter)
 

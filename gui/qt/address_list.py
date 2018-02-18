@@ -25,10 +25,10 @@
 import webbrowser
 
 from .util import *
-from electrum.i18n import _
-from electrum.util import block_explorer_URL
-from electrum.plugins import run_hook
-from electrum.bitcoin import is_address
+from electrum_xzc.i18n import _
+from electrum_xzc.util import block_explorer_URL
+from electrum_xzc.plugins import run_hook
+from electrum_xzc.bitcoin import is_address
 
 
 class AddressList(MyTreeWidget):
@@ -38,11 +38,11 @@ class AddressList(MyTreeWidget):
         MyTreeWidget.__init__(self, parent, self.create_menu, [], 1)
         self.refresh_headers()
         self.setSelectionMode(QAbstractItemView.ExtendedSelection)
-        self.show_change = 0
+        self.show_change = False
         self.show_used = 0
         self.change_button = QComboBox(self)
         self.change_button.currentIndexChanged.connect(self.toggle_change)
-        for t in [_('Receiving'), _('Change'), _('All')]:
+        for t in [_('Receiving'), _('Change')]:
             self.change_button.addItem(t)
         self.used_button = QComboBox(self)
         self.used_button.currentIndexChanged.connect(self.toggle_used)
@@ -60,10 +60,11 @@ class AddressList(MyTreeWidget):
         headers.extend([_('Tx')])
         self.update_headers(headers)
 
-    def toggle_change(self, state):
-        if state == self.show_change:
+    def toggle_change(self, show):
+        show = bool(show)
+        if show == self.show_change:
             return
-        self.show_change = state
+        self.show_change = show
         self.update()
 
     def toggle_used(self, state):
@@ -76,12 +77,7 @@ class AddressList(MyTreeWidget):
         self.wallet = self.parent.wallet
         item = self.currentItem()
         current_address = item.data(0, Qt.UserRole) if item else None
-        if self.show_change == 0:
-            addr_list = self.wallet.get_receiving_addresses()
-        elif self.show_change == 1:
-            addr_list = self.wallet.get_change_addresses()
-        else:
-            addr_list = self.wallet.get_addresses()
+        addr_list = self.wallet.get_change_addresses() if self.show_change else self.wallet.get_receiving_addresses()
         self.clear()
         for address in addr_list:
             num = len(self.wallet.history.get(address,[]))
@@ -110,14 +106,14 @@ class AddressList(MyTreeWidget):
             address_item.setData(0, Qt.UserRole+1, True) # label can be edited
             if self.wallet.is_frozen(address):
                 address_item.setBackground(0, ColorScheme.BLUE.as_color(True))
-            if self.wallet.is_beyond_limit(address):
+            if self.wallet.is_beyond_limit(address, self.show_change):
                 address_item.setBackground(0, ColorScheme.RED.as_color(True))
             self.addChild(address_item)
             if address == current_address:
                 self.setCurrentItem(address_item)
 
     def create_menu(self, position):
-        from electrum.wallet import Multisig_Wallet
+        from electrum_xzc.wallet import Multisig_Wallet
         is_multisig = isinstance(self.wallet, Multisig_Wallet)
         can_delete = self.wallet.can_delete_address()
         selected = self.selectedItems()
@@ -139,10 +135,10 @@ class AddressList(MyTreeWidget):
         if not multi_select:
             column_title = self.headerItem().text(col)
             copy_text = item.text(col)
-            menu.addAction(_("Copy {}").format(column_title), lambda: self.parent.app.clipboard().setText(copy_text))
+            menu.addAction(_("Copy %s")%column_title, lambda: self.parent.app.clipboard().setText(copy_text))
             menu.addAction(_('Details'), lambda: self.parent.show_address(addr))
             if col in self.editable_columns:
-                menu.addAction(_("Edit {}").format(column_title), lambda: self.editItem(item, col))
+                menu.addAction(_("Edit %s")%column_title, lambda: self.editItem(item, col))
             menu.addAction(_("Request payment"), lambda: self.parent.receive_at(addr))
             if self.wallet.can_export():
                 menu.addAction(_("Private key"), lambda: self.parent.show_private_key(addr))

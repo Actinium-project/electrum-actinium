@@ -6,7 +6,7 @@ import traceback, platform
 from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5 import QtWidgets
-from electrum import util
+from electrum_xzc import util
 
 
 if platform.system() == 'Windows':
@@ -203,8 +203,7 @@ class Console(QtWidgets.QPlainTextEdit):
                     self.skip = not self.skip
 
             if type(self.namespace.get(command)) == type(lambda:None):
-                self.appendPlainText("'{}' is a function. Type '{}()' to use it in the Python console."
-                                     .format(command, command))
+                self.appendPlainText("'%s' is a function. Type '%s()' to use it in the Python console."%(command, command))
                 self.newPrompt()
                 return
 

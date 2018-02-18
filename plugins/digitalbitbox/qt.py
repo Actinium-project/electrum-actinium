@@ -1,9 +1,9 @@
 from ..hw_wallet.qt import QtHandlerBase, QtPluginBase
 from .digitalbitbox import DigitalBitboxPlugin
 
-from electrum.i18n import _
-from electrum.plugins import hook
-from electrum.wallet import Standard_Wallet
+from electrum_xzc.i18n import _
+from electrum_xzc.plugins import hook
+from electrum_xzc.wallet import Standard_Wallet
 
 
 class Plugin(DigitalBitboxPlugin, QtPluginBase):
@@ -39,7 +39,7 @@ class Plugin(DigitalBitboxPlugin, QtPluginBase):
                     }
                 self.comserver_post_notification(verify_request_payload)
 
-            menu.addAction(_("Show on {}").format(self.device), show_address)
+            menu.addAction(_("Show on %s") % self.device, show_address)
 
 
 class DigitalBitbox_Handler(QtHandlerBase):

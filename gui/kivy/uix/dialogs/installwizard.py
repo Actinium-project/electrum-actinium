@@ -14,7 +14,7 @@ from kivy.core.window import Window
 from kivy.clock import Clock
 from kivy.utils import platform
 
-from electrum.base_wizard import BaseWizard
+from electrum_xzc.base_wizard import BaseWizard
 
 
 from . import EventsDialog
@@ -28,7 +28,7 @@ test_xpub = "xpub661MyMwAqRbcEbvVtRRSjqxVnaWVUMewVzMiURAKyYratih4TtBpMypzzefmv8z
 
 Builder.load_string('''
 #:import Window kivy.core.window.Window
-#:import _ electrum_gui.kivy.i18n._
+#:import _ electrum_xzc_gui.kivy.i18n._
 
 
 <WizardTextInput@TextInput>
@@ -135,7 +135,7 @@ Builder.load_string('''
         height: self.minimum_height
         Label:
             color: root.text_color
-            text: _('From {} cosigners').format(n.value)
+            text: _('From %d cosigners')%n.value
         Slider:
             id: n
             range: 2, 5
@@ -143,7 +143,7 @@ Builder.load_string('''
             value: 2
         Label:
             color: root.text_color
-            text: _('Require {} signatures').format(m.value)
+            text: _('Require %d signatures')%m.value
         Slider:
             id: m
             range: 1, n.value
@@ -559,8 +559,8 @@ class RestoreSeedDialog(WizardDialog):
     def __init__(self, wizard, **kwargs):
         super(RestoreSeedDialog, self).__init__(wizard, **kwargs)
         self._test = kwargs['test']
-        from electrum.mnemonic import Mnemonic
-        from electrum.old_mnemonic import words as old_wordlist
+        from electrum_xzc.mnemonic import Mnemonic
+        from electrum_xzc.old_mnemonic import words as old_wordlist
         self.words = set(Mnemonic('en').wordlist).union(set(old_wordlist))
         self.ids.text_input_seed.text = test_seed if is_test else ''
         self.message = _('Please type your seed phrase using the virtual keyboard.')
@@ -807,7 +807,7 @@ class InstallWizard(BaseWizard, Widget):
         popup.init(message, callback)
         popup.open()
 
-    def request_password(self, run_next, force_disable_encrypt_cb=False):
+    def request_password(self, run_next):
         def callback(pin):
             if pin:
                 self.run('confirm_password', pin, run_next)

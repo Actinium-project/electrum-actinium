@@ -68,6 +68,21 @@ XPUB_HEADERS = {
     'p2wsh': 0x2aa7ed3
 }
 
+# class Zcoin(Coin):
+#     NAME = "Zcoin"
+#     SHORTNAME = "XZC"
+#     NET = "mainnet"
+#     P2PKH_VERBYTE = bytes.fromhex("52")
+#     P2SH_VERBYTES = [bytes.fromhex("07")]
+#     WIF_BYTE = bytes.fromhex("d2")
+#     GENESIS_HASH = ('4381deb85b1b2c9843c222944b616d99'
+#                     '7516dcbd6a964e1eaf0def0830695233')
+#     TX_COUNT = 1
+#     TX_COUNT_HEIGHT = 1
+#     TX_PER_BLOCK = 1
+#     IRC_PREFIX = None
+#     RPC_PORT = 8888
+#     REORG_LIMIT = 5000
 
 class NetworkConstants:
 
@@ -75,10 +90,10 @@ class NetworkConstants:
     def set_mainnet(cls):
         cls.TESTNET = False
         cls.WIF_PREFIX = 0x80
-        cls.ADDRTYPE_P2PKH = 0
-        cls.ADDRTYPE_P2SH = 5
-        cls.SEGWIT_HRP = "bc"
-        cls.GENESIS = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
+        cls.ADDRTYPE_P2PKH = 82  # 0x52
+        cls.ADDRTYPE_P2SH = 7  # 0x07
+        cls.SEGWIT_HRP = "xzc"
+        cls.GENESIS = "4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233"
         cls.DEFAULT_PORTS = {'t': '50001', 's': '50002'}
         cls.DEFAULT_SERVERS = read_json('servers.json', {})
         cls.CHECKPOINTS = read_json('checkpoints.json', [])
@@ -86,11 +101,11 @@ class NetworkConstants:
     @classmethod
     def set_testnet(cls):
         cls.TESTNET = True
-        cls.WIF_PREFIX = 0xef
+        cls.WIF_PREFIX = 0xbf
         cls.ADDRTYPE_P2PKH = 111
-        cls.ADDRTYPE_P2SH = 196
-        cls.SEGWIT_HRP = "tb"
-        cls.GENESIS = "000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943"
+        cls.ADDRTYPE_P2SH = 58
+        cls.SEGWIT_HRP = "txzc"
+        cls.GENESIS = "4966625a4b2851d9fdee139e56211a0d88575f59ed816ff5e6a63deb4e3e29a0"
         cls.DEFAULT_PORTS = {'t':'51001', 's':'51002'}
         cls.DEFAULT_SERVERS = read_json('servers_testnet.json', {})
         cls.CHECKPOINTS = read_json('checkpoints_testnet.json', [])
@@ -100,9 +115,9 @@ NetworkConstants.set_mainnet()
 
 ################################## transactions
 
-FEE_STEP = 10000
-MAX_FEE_RATE = 300000
-
+FEE_STEP = 100000
+MAX_FEE_RATE = 1000000
+FEE_TARGETS = [25, 10, 5, 2]
 
 COINBASE_MATURITY = 100
 COIN = 100000000
@@ -512,10 +527,10 @@ def DecodeBase58Check(psz):
 # extended key export format for segwit
 
 SCRIPT_TYPES = {
-    'p2pkh':0,
+    'p2pkh':82,
     'p2wpkh':1,
     'p2wpkh-p2sh':2,
-    'p2sh':5,
+    'p2sh':7,
     'p2wsh':6,
     'p2wsh-p2sh':7
 }
@@ -619,7 +634,7 @@ from ecdsa.util import string_to_number, number_to_string
 
 def msg_magic(message):
     length = bfh(var_int(len(message)))
-    return b"\x18Bitcoin Signed Message:\n" + length + message
+    return b"\x19Zcoin Signed Message:\n" + length + message
 
 
 def verify_message(address, sig, message):
@@ -643,8 +658,8 @@ def verify_message(address, sig, message):
         return False
 
 
-def encrypt_message(message, pubkey, magic=b'BIE1'):
-    return EC_KEY.encrypt_message(message, bfh(pubkey), magic)
+def encrypt_message(message, pubkey):
+    return EC_KEY.encrypt_message(message, bfh(pubkey))
 
 
 def chunks(l, n):
@@ -789,7 +804,7 @@ class EC_KEY(object):
     # ECIES encryption/decryption methods; AES-128-CBC with PKCS7 is used as the cipher; hmac-sha256 is used as the mac
 
     @classmethod
-    def encrypt_message(self, message, pubkey, magic=b'BIE1'):
+    def encrypt_message(self, message, pubkey):
         assert_bytes(message)
 
         pk = ser_to_point(pubkey)
@@ -803,20 +818,20 @@ class EC_KEY(object):
         iv, key_e, key_m = key[0:16], key[16:32], key[32:]
         ciphertext = aes_encrypt_with_iv(key_e, iv, message)
         ephemeral_pubkey = bfh(ephemeral.get_public_key(compressed=True))
-        encrypted = magic + ephemeral_pubkey + ciphertext
+        encrypted = b'BIE1' + ephemeral_pubkey + ciphertext
         mac = hmac.new(key_m, encrypted, hashlib.sha256).digest()
 
         return base64.b64encode(encrypted + mac)
 
-    def decrypt_message(self, encrypted, magic=b'BIE1'):
+    def decrypt_message(self, encrypted):
         encrypted = base64.b64decode(encrypted)
         if len(encrypted) < 85:
             raise Exception('invalid ciphertext: length')
-        magic_found = encrypted[:4]
+        magic = encrypted[:4]
         ephemeral_pubkey = encrypted[4:37]
         ciphertext = encrypted[37:-32]
         mac = encrypted[-32:]
-        if magic_found != magic:
+        if magic != b'BIE1':
             raise Exception('invalid ciphertext: invalid magic bytes')
         try:
             ephemeral_pubkey = ser_to_point(ephemeral_pubkey)

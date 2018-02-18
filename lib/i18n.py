@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 #
 # Electrum - lightweight Bitcoin client
 # Copyright (C) 2012 thomasv@gitorious
@@ -29,7 +30,13 @@ language = gettext.translation('electrum', LOCALE_DIR, fallback = True)
 
 def _(x):
     global language
-    return language.gettext(x)
+    dic = [('Bitcoin', 'Zcoin'), ('bitcoin', 'zcoin'), ('比特币', '莱特币')]
+    for b, l in dic:
+        x = x.replace(l, b)
+    t = language.gettext(x)
+    for b, l in dic:
+        t = t.replace(b, l)
+    return t
 
 def set_language(x):
     global language

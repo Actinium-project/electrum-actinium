@@ -2,15 +2,15 @@ import threading
 
 from binascii import hexlify, unhexlify
 
-from electrum.util import bfh, bh2u
-from electrum.bitcoin import (b58_address_to_hash160, xpub_from_pubkey,
-                              TYPE_ADDRESS, TYPE_SCRIPT, NetworkConstants,
-                              is_segwit_address)
-from electrum.i18n import _
-from electrum.plugins import BasePlugin
-from electrum.transaction import deserialize
-from electrum.keystore import Hardware_KeyStore, is_xpubkey, parse_xpubkey
-from electrum.base_wizard import ScriptTypeNotSupported
+from electrum_xzc.util import bfh, bh2u
+from electrum_xzc.bitcoin import (b58_address_to_hash160, xpub_from_pubkey,
+                                  TYPE_ADDRESS, TYPE_SCRIPT, NetworkConstants,
+                                  is_segwit_address)
+from electrum_xzc.i18n import _
+from electrum_xzc.plugins import BasePlugin
+from electrum_xzc.transaction import deserialize
+from electrum_xzc.keystore import Hardware_KeyStore, is_xpubkey, parse_xpubkey
+from electrum_xzc.base_wizard import ScriptTypeNotSupported
 
 from ..hw_wallet import HW_PluginBase
 
@@ -30,7 +30,7 @@ class KeepKeyCompatibleKeyStore(Hardware_KeyStore):
         return self.plugin.get_client(self, force_pair)
 
     def decrypt_message(self, sequence, message, password):
-        raise RuntimeError(_('Encryption and decryption are not implemented by {}').format(self.device))
+        raise RuntimeError(_('Encryption and decryption are not implemented by %s') % self.device)
 
     def sign_message(self, sequence, message, password):
         client = self.get_client()
@@ -119,9 +119,9 @@ class KeepKeyCompatiblePlugin(HW_PluginBase):
             return None
 
         if not client.atleast_version(*self.minimum_firmware):
-            msg = (_('Outdated {} firmware for device labelled {}. Please '
-                     'download the updated firmware from {}')
-                   .format(self.device, client.label(), self.firmware_URL))
+            msg = (_('Outdated %s firmware for device labelled %s. Please '
+                     'download the updated firmware from %s') %
+                   (self.device, client.label(), self.firmware_URL))
             self.print_error(msg)
             handler.show_error(msg)
             return None
@@ -139,18 +139,18 @@ class KeepKeyCompatiblePlugin(HW_PluginBase):
         return client
 
     def get_coin_name(self):
-        return "Testnet" if NetworkConstants.TESTNET else "Bitcoin"
+        return "Testnet" if NetworkConstants.TESTNET else "Zcoin"
 
     def initialize_device(self, device_id, wizard, handler):
         # Initialization method
-        msg = _("Choose how you want to initialize your {}.\n\n"
+        msg = _("Choose how you want to initialize your %s.\n\n"
                 "The first two methods are secure as no secret information "
                 "is entered into your computer.\n\n"
                 "For the last two methods you input secrets on your keyboard "
-                "and upload them to your {}, and so you should "
+                "and upload them to your %s, and so you should "
                 "only do those on a computer you know to be trustworthy "
                 "and free of malware."
-        ).format(self.device, self.device)
+        ) % (self.device, self.device)
         choices = [
             # Must be short as QT doesn't word-wrap radio button text
             (TIM_NEW, _("Let the device generate a completely new seed randomly")),
@@ -194,7 +194,10 @@ class KeepKeyCompatiblePlugin(HW_PluginBase):
                                        label, language)
         wizard.loop.exit(0)
 
-    def setup_device(self, device_info, wizard, purpose):
+    def setup_device(self, device_info, wizard):
+        '''Called when creating a new wallet.  Select the device to use.  If
+        the device is uninitialized, go through the intialization
+        process.'''
         devmgr = self.device_manager()
         device_id = device_info.device.id_
         client = devmgr.client_by_id(device_id)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python2
 # -*- mode: python -*-
 #
 # Electrum - lightweight Bitcoin client
@@ -27,11 +27,11 @@
 import threading
 
 from PyQt5.Qt import QVBoxLayout, QLabel
-from electrum_gui.qt.password_dialog import PasswordDialog, PW_PASSPHRASE
-from electrum_gui.qt.util import *
+from electrum_xzc_gui.qt.password_dialog import PasswordDialog, PW_PASSPHRASE
+from electrum_xzc_gui.qt.util import *
 
-from electrum.i18n import _
-from electrum.util import PrintError
+from electrum_xzc.i18n import _
+from electrum_xzc.util import PrintError
 
 # The trickiest thing about this handler was getting windows properly
 # parented on MacOSX.
@@ -70,10 +70,9 @@ class QtHandlerBase(QObject, PrintError):
         self.status_signal.emit(paired)
 
     def _update_status(self, paired):
-        if hasattr(self, 'button'):
-            button = self.button
-            icon = button.icon_paired if paired else button.icon_unpaired
-            button.setIcon(QIcon(icon))
+        button = self.button
+        icon = button.icon_paired if paired else button.icon_unpaired
+        button.setIcon(QIcon(icon))
 
     def query_choice(self, msg, labels):
         self.done.clear()
@@ -144,7 +143,7 @@ class QtHandlerBase(QObject, PrintError):
     def message_dialog(self, msg, on_cancel):
         # Called more than once during signing, to confirm output and fee
         self.clear_dialog()
-        title = _('Please check your {} device').format(self.device)
+        title = _('Please check your %s device') % self.device
         self.dialog = dialog = WindowModalDialog(self.top_level_window(), title)
         l = QLabel(msg)
         vbox = QVBoxLayout(dialog)
@@ -172,9 +171,9 @@ class QtHandlerBase(QObject, PrintError):
 
 
 
-from electrum.plugins import hook
-from electrum.util import UserCancelled
-from electrum_gui.qt.main_window import StatusBarButton
+from electrum_xzc.plugins import hook
+from electrum_xzc.util import UserCancelled
+from electrum_xzc_gui.qt.main_window import StatusBarButton
 
 class QtPluginBase(object):
 
@@ -184,12 +183,10 @@ class QtPluginBase(object):
             if not isinstance(keystore, self.keystore_class):
                 continue
             if not self.libraries_available:
-                if hasattr(self, 'libraries_available_message'):
-                    message = self.libraries_available_message + '\n'
-                else:
-                    message = _("Cannot find python library for") + " '%s'.\n" % self.name
-                message += _("Make sure you install it with python3")
-                window.show_error(message)
+                window.show_error(
+                    _("Cannot find python library for") + " '%s'.\n" % self.name \
+                    + _("Make sure you install it with python3")
+                )
                 return
             tooltip = self.device + '\n' + (keystore.label or 'unnamed')
             cb = partial(self.show_settings_dialog, window, keystore)

@@ -24,8 +24,8 @@
 # SOFTWARE.
 
 from .util import *
-from electrum.i18n import _
-from electrum.util import format_time, FileImportFailed
+from electrum_xzc.i18n import _
+from electrum_xzc.util import format_time
 
 
 class InvoiceList(MyTreeWidget):
@@ -61,10 +61,7 @@ class InvoiceList(MyTreeWidget):
         filename, __ = QFileDialog.getOpenFileName(self.parent, "Select your wallet file", wallet_folder)
         if not filename:
             return
-        try:
-            self.parent.invoices.import_file(filename)
-        except FileImportFailed as e:
-            self.parent.show_message(str(e))
+        self.parent.invoices.import_file(filename)
         self.on_update()
 
     def create_menu(self, position):
@@ -79,7 +76,7 @@ class InvoiceList(MyTreeWidget):
         pr = self.parent.invoices.get(key)
         status = self.parent.invoices.get_status(key)
         if column_data:
-            menu.addAction(_("Copy {}").format(column_title), lambda: self.parent.app.clipboard().setText(column_data))
+            menu.addAction(_("Copy %s")%column_title, lambda: self.parent.app.clipboard().setText(column_data))
         menu.addAction(_("Details"), lambda: self.parent.show_invoice(key))
         if status == PR_UNPAID:
             menu.addAction(_("Pay Now"), lambda: self.parent.do_pay_invoice(key))

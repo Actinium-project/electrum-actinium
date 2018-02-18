@@ -24,10 +24,10 @@
 # SOFTWARE.
 import webbrowser
 
-from electrum.i18n import _
-from electrum.bitcoin import is_address
-from electrum.util import block_explorer_URL, FileImportFailed
-from electrum.plugins import run_hook
+from electrum_xzc.i18n import _
+from electrum_xzc.bitcoin import is_address
+from electrum_xzc.util import block_explorer_URL
+from electrum_xzc.plugins import run_hook
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import (
@@ -57,10 +57,7 @@ class ContactList(MyTreeWidget):
         filename, __ = QFileDialog.getOpenFileName(self.parent, "Select your wallet file", wallet_folder)
         if not filename:
             return
-        try:
-            self.parent.contacts.import_file(filename)
-        except FileImportFailed as e:
-            self.parent.show_message(str(e))
+        self.parent.contacts.import_file(filename)
         self.on_update()
 
     def create_menu(self, position):
@@ -75,10 +72,10 @@ class ContactList(MyTreeWidget):
             column = self.currentColumn()
             column_title = self.headerItem().text(column)
             column_data = '\n'.join([item.text(column) for item in selected])
-            menu.addAction(_("Copy {}").format(column_title), lambda: self.parent.app.clipboard().setText(column_data))
+            menu.addAction(_("Copy %s")%column_title, lambda: self.parent.app.clipboard().setText(column_data))
             if column in self.editable_columns:
                 item = self.currentItem()
-                menu.addAction(_("Edit {}").format(column_title), lambda: self.editItem(item, column))
+                menu.addAction(_("Edit %s")%column_title, lambda: self.editItem(item, column))
             menu.addAction(_("Pay to"), lambda: self.parent.payto_contacts(keys))
             menu.addAction(_("Delete"), lambda: self.parent.delete_contacts(keys))
             URLs = [block_explorer_URL(self.config, 'addr', key) for key in filter(is_address, keys)]
