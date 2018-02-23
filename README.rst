@@ -64,7 +64,7 @@ Install dependencies::
 
 Check out the code from Github::
 
-    git clone git://github.com/sn-ntu/electrum-xzc.git
+    git clone git://github.com/zcoinofficial/electrum-xzc.git
     cd electrum-xzc
 
 Install lyra2z lib::
