@@ -21,8 +21,7 @@ VERSION=`git describe --tags`
 PYTHON_VERSION=3.6.1
 BUILDDIR=/tmp/electrum-xzc-build
 PACKAGE=Electrum-XZC
-GIT_REPO=git@gitlab.com:btzc/electrum-xzc.git
-
+GIT_REPO=https://github.com/zcoinofficial/electrum-xzc
 
 info "Installing Python $PYTHON_VERSION"
 export PATH="~/.pyenv/bin:~/.pyenv/shims:~/Library/Python/3.6/bin:$PATH"
@@ -76,4 +75,4 @@ pyinstaller --noconfirm --ascii --name $VERSION contrib/build-osx/osx.spec || fa
 
 info "Creating .DMG"
 info $PACKAGE
-hdiutil create -fs HFS+ -volname $PACKAGE -srcfolder dist/$PACKAGE.app dist/electrum-$VERSION.dmg || fail "Could not create .DMG"
+hdiutil create -fs HFS+ -volname $PACKAGE -srcfolder dist/$PACKAGE.app dist/electrum-xzc-$VERSION.dmg || fail "Could not create .DMG"
