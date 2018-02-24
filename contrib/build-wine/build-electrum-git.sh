@@ -25,7 +25,7 @@ for repo in electrum-xzc electrum-xzc-locale electrum-xzc-icons; do
 	git checkout master
 	cd ..
     else
-	URL=https://github.com/sn-ntu/$repo.git
+	URL=https://github.com/pooler/$repo.git
 	git clone -b master $URL $repo
     fi
 done
@@ -55,7 +55,14 @@ cp -r electrum-xzc-locale/locale $WINEPREFIX/drive_c/electrum-xzc/lib/
 cp electrum-xzc-icons/icons_rc.py $WINEPREFIX/drive_c/electrum-xzc/gui/qt/
 
 # Install frozen dependencies
-$PYTHON -m pip install -r ../../requirements.txt
+$PYTHON -m pip install -r ../../deterministic-build/requirements.txt
+
+# Workaround until they upload binary wheels themselves:
+wget 'https://ci.appveyor.com/api/buildjobs/bwr3yfghdemoryy8/artifacts/dist%2Fpyblake2-1.1.0-cp35-cp35m-win32.whl' -O pyblake2-1.1.0-cp35-cp35m-win32.whl
+$PYTHON -m pip install ./pyblake2-1.1.0-cp35-cp35m-win32.whl
+
+
+$PYTHON -m pip install -r ../../deterministic-build/requirements-hw.txt
 
 pushd $WINEPREFIX/drive_c/electrum-xzc
 $PYTHON setup.py install

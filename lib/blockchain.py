@@ -26,7 +26,7 @@ import threading
 from . import util
 from . import bitcoin
 from .bitcoin import *
-import lyra2z_hash
+# import lyra2z_hash
 
 try:
     import scrypt
@@ -69,7 +69,7 @@ def hash_header(header):
     return hash_encode(Hash(bfh(serialize_header(header))))
 
 def pow_hash_header(header):
-    # return hash_encode(getPoWHash(bfh(serialize_header(header))))
+    return hash_encode(getPoWHash(bfh(serialize_header(header))))
     # if (!fTestNet & & nHeight >= HF_LYRA2Z_HEIGHT) {
     # lyra2z_hash(BEGIN(nVersion), BEGIN(powHash));
     # } else if (!fTestNet & & nHeight >= HF_LYRA2_HEIGHT) {
@@ -85,16 +85,16 @@ def pow_hash_header(header):
     # } else {
     # scrypt_N_1_1_256(BEGIN(nVersion), BEGIN(powHash), GetNfactor(nTime));
     # }
-    try:
-        height = header.get('block_height')
-        if height >= HF_LYRA2Z_HEIGHT:
-            return hash_encode(lyra2z_hash.getPoWHash(bfh(serialize_header(header))))
-        elif height >= HF_LYRA2_HEIGHT:
-            return hash_encode(lyra2z_hash.getPoWHash(bfh(serialize_header(header))))
-        else:
-            return hash_encode(lyra2z_hash.getPoWHash(bfh(serialize_header(header))))
-    except Exception as e:
-        print_error(e)
+    # try:
+    #     height = header.get('block_height')
+    #     if height >= HF_LYRA2Z_HEIGHT:
+    #         return hash_encode(lyra2z_hash.getPoWHash(bfh(serialize_header(header))))
+    #     elif height >= HF_LYRA2_HEIGHT:
+    #         return hash_encode(lyra2z_hash.getPoWHash(bfh(serialize_header(header))))
+    #     else:
+    #         return hash_encode(lyra2z_hash.getPoWHash(bfh(serialize_header(header))))
+    # except Exception as e:
+    #     print_error(e)
 
 
 blockchains = {}

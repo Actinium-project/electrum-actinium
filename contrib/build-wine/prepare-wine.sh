@@ -1,8 +1,12 @@
 #!/bin/bash
 
 # Please update these carefully, some versions won't work under Wine
-NSIS_URL=https://prdownloads.sourceforge.net/nsis/nsis-3.02.1-setup.exe?download
+NSIS_URL=https://excellmedia.dl.sourceforge.net/project/nsis/NSIS%203/3.02.1/nsis-3.02.1-setup.exe
 NSIS_SHA256=736c9062a02e297e335f82252e648a883171c98e0d5120439f538c81d429552e
+
+LIBUSB_URL=https://phoenixnap.dl.sourceforge.net/project/libusb/libusb-1.0/libusb-1.0.21/libusb-1.0.21.7z
+LIBUSB_SHA256=acdde63a40b1477898aee6153f9d91d1a2e8a5d93f832ca8ab876498f3a6d2b8
+
 PYTHON_VERSION=3.5.4
 
 ## These settings probably don't need change
@@ -11,7 +15,6 @@ export WINEPREFIX=/opt/wine64
 
 PYHOME=c:/python$PYTHON_VERSION
 PYTHON="wine $PYHOME/python.exe -OO -B"
-
 
 # based on https://superuser.com/questions/497940/script-to-verify-a-signature-with-gpg
 verify_signature() {
@@ -72,28 +75,20 @@ done
 # upgrade pip
 $PYTHON -m pip install pip --upgrade
 
-# Install PyWin32
-$PYTHON -m pip install pypiwin32
+# Install pywin32-ctypes (needed by pyinstaller)
+$PYTHON -m pip install pywin32-ctypes==0.1.2
 
-# Install PyQt
-$PYTHON -m pip install PyQt5
+# install PySocks
+$PYTHON -m pip install win_inet_pton==1.0.1
 
-## Install pyinstaller
-#$PYTHON -m pip install pyinstaller==3.3
+$PYTHON -m pip install -r ../../deterministic-build/requirements-binaries.txt
 
+# Install PyInstaller
+$PYTHON -m pip install https://github.com/ecdsa/pyinstaller/archive/fix_2952.zip
 
 # Install ZBar
 #wget -q -O zbar.exe "https://sourceforge.net/projects/zbar/files/zbar/0.10/zbar-0.10-setup.exe/download"
 #wine zbar.exe
-
-# install Cryptodome
-$PYTHON -m pip install pycryptodomex
-
-# install PySocks
-$PYTHON -m pip install win_inet_pton
-
-# install websocket (python2)
-$PYTHON -m pip install websocket-client
 
 # Upgrade setuptools (so Electrum can be installed later)
 $PYTHON -m pip install setuptools --upgrade
@@ -103,6 +98,11 @@ wget -q -O nsis.exe "$NSIS_URL"
 verify_hash nsis.exe $NSIS_SHA256
 wine nsis.exe /S
 
+wget -q -O libusb.7z "$LIBUSB_URL"
+verify_hash libusb.7z "$LIBUSB_SHA256"
+7z x -olibusb libusb.7z
+cp libusb/MS32/dll/libusb-1.0.dll $WINEPREFIX/drive_c/python$PYTHON_VERSION/
+
 # Install UPX
 #wget -O upx.zip "https://downloads.sourceforge.net/project/upx/upx/3.08/upx308w.zip"
 #unzip -o upx.zip
@@ -111,21 +111,24 @@ wine nsis.exe /S
 # add dlls needed for pyinstaller:
 cp $WINEPREFIX/drive_c/python$PYTHON_VERSION/Lib/site-packages/PyQt5/Qt/bin/* $WINEPREFIX/drive_c/python$PYTHON_VERSION/
 
-
 # Install MinGW
-wget http://downloads.sourceforge.net/project/mingw/Installer/mingw-get-setup.exe
-wine mingw-get-setup.exe
+#wget https://www.dropbox.com/s/u8005340uvz45lk/mingw-get-setup.exe
+#wine mingw-get-setup.exe
 
-echo "add c:\MinGW\bin to PATH using regedit"
-echo "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
-regedit
+#echo "add c:\MinGW\bin to PATH using regedit"
+#echo "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\Environment"
+#regedit
 
-wine mingw-get install gcc
-wine mingw-get install mingw-utils
-wine mingw-get install mingw32-libz
+#wine mingw-get install gcc
+#wine mingw-get install mingw-utils
+#wine mingw-get install mingw32-libz
 
-printf "[build]\ncompiler=mingw32\n" > $WINEPREFIX/drive_c/python$PYTHON_VERSION/Lib/distutils/distutils.cfg
+#printf "[build]\ncompiler=mingw32\n" > $WINEPREFIX/drive_c/Python$PYTHON_VERSION/Lib/distutils/distutils.cfg
 
-$PYTHON -m pip install scrypt
+#Install lyra2re
+#$PYTHON -m pip install https://github.com/metalicjames/lyra2re-hash-python/archive/master.zip
+
+#Install lyra2z
+#$PYTHON -m pip install https://github.com/devwarrior777/lyra2z-py/archive/master.zip
 
 echo "Wine is configured. Please run prepare-pyinstaller.sh"
