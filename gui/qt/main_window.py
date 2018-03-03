@@ -1491,9 +1491,10 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         if use_rbf:
             tx.set_rbf(True)
 
-        if fee < self.wallet.relayfee() * tx.estimated_size() / 1000:
-            self.show_error(_("This transaction requires a higher fee, or it will not be propagated by the network"))
-            return
+        # Network allows transactions with any fees ATM. Alow user to set them as low 1 satoshi/byte.
+        # if fee < self.wallet.relayfee() * tx.estimated_size() / 1000:
+        #     self.show_error(_("This transaction requires a higher fee, or it will not be propagated by the network"))
+        #     return
 
         if preview:
             self.show_transaction(tx, tx_desc)
