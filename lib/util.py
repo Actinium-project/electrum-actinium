@@ -717,3 +717,6 @@ def setup_thread_excepthook():
         self.run = run_with_except_hook
 
     threading.Thread.__init__ = init
+
+def versiontuple(v):
+    return tuple(map(int, (v.split("."))))
