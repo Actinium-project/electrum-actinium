@@ -2934,16 +2934,16 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         ex_combo.currentIndexChanged.connect(on_exchange)
 
         fiat_widgets = []
-        fiat_widgets.append((QLabel(_('Fiat currency')), ccy_combo))
+        fiat_widgets.append((QLabel(_('Currency')), ccy_combo))
         fiat_widgets.append((QLabel(_('Show history rates')), hist_checkbox))
-        fiat_widgets.append((QLabel(_('Show Fiat balance for addresses')), fiat_address_checkbox))
+        fiat_widgets.append((QLabel(_('Show converted balance for addresses')), fiat_address_checkbox))
         fiat_widgets.append((QLabel(_('Source')), ex_combo))
 
         tabs_info = [
             (fee_widgets, _('Fees')),
             (tx_widgets, _('Transactions')),
             (gui_widgets, _('Appearance')),
-            (fiat_widgets, _('Fiat')),
+            (fiat_widgets, _('FX rates')),
             (id_widgets, _('Identity')),
         ]
         for widgets, name in tabs_info:

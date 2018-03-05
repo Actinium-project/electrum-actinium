@@ -19,7 +19,8 @@ CCY_PRECISIONS = {'BHD': 3, 'BIF': 0, 'BYR': 0, 'CLF': 4, 'CLP': 0,
                   'JOD': 3, 'JPY': 0, 'KMF': 0, 'KRW': 0, 'KWD': 3,
                   'LYD': 3, 'MGA': 1, 'MRO': 1, 'OMR': 3, 'PYG': 0,
                   'RWF': 0, 'TND': 3, 'UGX': 0, 'UYI': 0, 'VND': 0,
-                  'VUV': 0, 'XAF': 0, 'XAU': 4, 'XOF': 0, 'XPF': 0}
+                  'VUV': 0, 'XAF': 0, 'XAU': 4, 'XOF': 0, 'XPF': 0,
+                  'BTC': 5, 'ETH': 4}
 
 
 class ExchangeBase(PrintError):
@@ -237,6 +238,30 @@ class WEX(ExchangeBase):
         return {'EUR': Decimal(json_eur['xzc_eur']['last']),
                 'RUB': Decimal(json_rub['xzc_rur']['last']),
                 'USD': Decimal(json_usd['xzc_usd']['last'])}
+
+
+class CryptoCompare(ExchangeBase):
+
+    def get_rates(self,ccy):
+        json = self.get_json('min-api.cryptocompare.com', '/data/price?fsym=XZC&tsyms=USD,EUR,THB,BTC,ETH')
+        return {'USD': Decimal(json['USD']), 'EUR': Decimal(json['EUR']), 'THB': Decimal(json['THB']), 'BTC': Decimal(json['BTC']), 'ETH': Decimal(json['ETH'])}
+
+    def history_ccys(self):
+        return ['USD', 'EUR', 'THB', 'BTC', 'ETH']
+
+    def historical_rates(self, ccy):
+        query = '/data/histoday?fsym=XZC&tsym=%s&limit=2000&aggregate=1' % ccy
+        json = self.get_json('min-api.cryptocompare.com', query)
+        history = json['Data']
+        return dict([(time.strftime('%Y-%m-%d', time.localtime(t['time'])), t['close'])
+                                    for t in history])
+
+
+class TDAX(ExchangeBase):
+
+    def get_rates(self,ccy):
+        json = self.get_json('api.tdax.com', '/marketcap')
+        return {'THB': Decimal(json['XZC_THB']['avg24hr'])}
 
 
 def dictinvert(d):
