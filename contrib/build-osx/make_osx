@@ -18,7 +18,7 @@ export PYTHONHASHSEED=22
 VERSION=`git describe --tags`
 
 # Paramterize
-PYTHON_VERSION=3.6.1
+PYTHON_VERSION=3.6.4
 BUILDDIR=/tmp/electrum-xzc-build
 PACKAGE=Electrum-XZC
 GIT_REPO=https://github.com/zcoinofficial/electrum-xzc
@@ -30,9 +30,9 @@ if [ -d "~/.pyenv" ]; then
 else
   curl -L https://raw.githubusercontent.com/pyenv/pyenv-installer/master/bin/pyenv-installer | bash > /dev/null 2>&1
 fi
-#PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install -s $PYTHON_VERSION && \
-#pyenv global $PYTHON_VERSION || \
-#fail "Unable to use Python $PYTHON_VERSION"
+PYTHON_CONFIGURE_OPTS="--enable-framework" pyenv install -s $PYTHON_VERSION && \
+pyenv global $PYTHON_VERSION || \
+fail "Unable to use Python $PYTHON_VERSION"
 
 
 info "Installing pyinstaller"
@@ -57,6 +57,7 @@ done
 
 cp -R $BUILDDIR/electrum-locale/locale/ ./lib/locale/
 cp    $BUILDDIR/electrum-icons/icons_rc.py ./gui/qt/
+
 
 info "Downloading libusb..."
 curl https://homebrew.bintray.com/bottles/libusb-1.0.21.el_capitan.bottle.tar.gz | \
