@@ -25,7 +25,7 @@ for repo in electrum-xzc electrum-xzc-locale electrum-xzc-icons; do
 	git checkout master
 	cd ..
     else
-	URL=https://github.com/pooler/$repo.git
+	URL=https://github.com/zcoinofficial/$repo.git
 	git clone -b master $URL $repo
     fi
 done

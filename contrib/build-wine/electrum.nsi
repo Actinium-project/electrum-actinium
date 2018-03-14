@@ -7,7 +7,7 @@
 ;Variables
 
   !define PRODUCT_NAME "Electrum-XZC"
-  !define PRODUCT_WEB_SITE "https://github.com/sn-ntu/electrum-xzc"
+  !define PRODUCT_WEB_SITE "https://github.com/zcoinofficial/electrum-xzc"
   !define PRODUCT_PUBLISHER "Electrum Technologies GmbH"
   !define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${PRODUCT_NAME}"
 
