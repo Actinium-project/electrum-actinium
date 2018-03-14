@@ -578,12 +578,13 @@ def from_bip39_seed(seed, passphrase, derivation):
 
 def xtype_from_derivation(derivation):
     """Returns the script type to be used for this derivation."""
-    if derivation.startswith("m/84'"):
-        return 'p2wpkh'
-    elif derivation.startswith("m/49'"):
-        return 'p2wpkh-p2sh'
-    else:
-        return 'standard'
+    return 'standard'
+    # if derivation.startswith("m/84'"):
+    #     return 'p2wpkh'
+    # elif derivation.startswith("m/49'"):
+    #     return 'p2wpkh-p2sh'
+    # else:
+    #     return 'standard'
 
 
 # extended pubkeys
