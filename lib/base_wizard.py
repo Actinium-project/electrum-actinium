@@ -229,7 +229,7 @@ class BaseWizard(object):
         if self.wallet_type=='multisig':
             # There is no general standard for HD multisig.
             # This is partially compatible with BIP45; assumes index=0
-            self.on_hw_derivation(name, device_info, "m/45'/0")
+            self.on_hw_derivation(name, device_info, "m/44'/136'/0'")
         else:
             f = lambda x: self.run('on_hw_derivation', name, device_info, str(x))
             self.derivation_dialog(f)
