@@ -67,6 +67,12 @@ XPUB_HEADERS = {
     'p2wpkh': 0x4b24746,
     'p2wsh': 0x2aa7ed3
 }
+TPRV_HEADERS = {
+    'standard': 0x04358394
+}
+TPUB_HEADERS = {
+    'standard': 0x043587cf
+}
 
 # class Zcoin(Coin):
 #     NAME = "Zcoin"
@@ -101,11 +107,11 @@ class NetworkConstants:
     @classmethod
     def set_testnet(cls):
         cls.TESTNET = True
-        cls.WIF_PREFIX = 0xbf
-        cls.ADDRTYPE_P2PKH = 111
-        cls.ADDRTYPE_P2SH = 58
+        cls.WIF_PREFIX = 185
+        cls.ADDRTYPE_P2PKH = 65
+        cls.ADDRTYPE_P2SH = 178
         cls.SEGWIT_HRP = "txzc"
-        cls.GENESIS = "4966625a4b2851d9fdee139e56211a0d88575f59ed816ff5e6a63deb4e3e29a0"
+        cls.GENESIS = "7ac038c193c2158c428c59f9ae0c02a07115141c6e9dc244ae96132e99b4e642"
         cls.DEFAULT_PORTS = {'t':'51001', 's':'51002'}
         cls.DEFAULT_SERVERS = read_json('servers_testnet.json', {})
         cls.CHECKPOINTS = read_json('checkpoints_testnet.json', [])
@@ -908,11 +914,19 @@ def _CKD_pub(cK, c, s):
 
 
 def xprv_header(xtype):
-    return bfh("%08x" % XPRV_HEADERS[xtype])
+    if NetworkConstants.TESTNET:
+        ret = TPRV_HEADERS[xtype]
+    else:
+        ret = XPRV_HEADERS[xtype]
+    return bfh("%08x" % ret)
 
 
 def xpub_header(xtype):
-    return bfh("%08x" % XPUB_HEADERS[xtype])
+    if NetworkConstants.TESTNET:
+        ret = TPUB_HEADERS[xtype]
+    else:
+        ret = XPUB_HEADERS[xtype]
+    return bfh("%08x" % ret)
 
 
 def serialize_xprv(xtype, c, k, depth=0, fingerprint=b'\x00'*4, child_number=b'\x00'*4):
@@ -934,7 +948,10 @@ def deserialize_xkey(xkey, prv):
     child_number = xkey[9:13]
     c = xkey[13:13+32]
     header = int('0x' + bh2u(xkey[0:4]), 16)
-    headers = XPRV_HEADERS if prv else XPUB_HEADERS
+    if NetworkConstants.TESTNET:
+        headers = TPRV_HEADERS if prv else TPUB_HEADERS
+    else:
+        headers = XPRV_HEADERS if prv else XPUB_HEADERS
     if header not in headers.values():
         raise BaseException('Invalid xpub format', hex(header))
     xtype = list(headers.keys())[list(headers.values()).index(header)]
