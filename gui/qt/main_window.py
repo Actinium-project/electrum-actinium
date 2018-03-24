@@ -2645,14 +2645,17 @@ class ElectrumWindow(QMainWindow, MessageBoxMixin, PrintError):
         nz.valueChanged.connect(on_nz)
         gui_widgets.append((nz_label, nz))
 
-        def on_dynfee(x):
-            self.config.set_key('dynamic_fees', x == Qt.Checked)
+        if self.config.is_dynfee():
+            self.config.set_key('dynamic_fees', False)
             self.fee_slider.update()
-        dynfee_cb = QCheckBox(_('Use dynamic fees'))
-        dynfee_cb.setChecked(self.config.is_dynfee())
-        dynfee_cb.setToolTip(_("Use fees recommended by the server."))
-        fee_widgets.append((dynfee_cb, None))
-        dynfee_cb.stateChanged.connect(on_dynfee)
+        # def on_dynfee(x):
+        #     self.config.set_key('dynamic_fees', x == Qt.Checked)
+        #     self.fee_slider.update()
+        # dynfee_cb = QCheckBox(_('Use dynamic fees'))
+        # dynfee_cb.setChecked(self.config.is_dynfee())
+        # dynfee_cb.setToolTip(_("Use fees recommended by the server."))
+        # fee_widgets.append((dynfee_cb, None))
+        # dynfee_cb.stateChanged.connect(on_dynfee)
 
         feebox_cb = QCheckBox(_('Edit fees manually'))
         feebox_cb.setChecked(self.config.get('show_fee', False))
