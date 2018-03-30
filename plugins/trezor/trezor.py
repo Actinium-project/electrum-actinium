@@ -1,5 +1,3 @@
-import threading
-
 from binascii import hexlify, unhexlify
 
 from electrum_xzc.util import bfh, bh2u, versiontuple
@@ -92,7 +90,6 @@ class TrezorPlugin(HW_PluginBase):
 
     def __init__(self, parent, config, name):
         HW_PluginBase.__init__(self, parent, config, name)
-        self.main_thread = threading.current_thread()
 
         try:
             # Minimal test if python-trezor is installed
