@@ -1,4 +1,16 @@
 {
+    "electrumx01.zcoin.io": {
+        "pruning": "-",
+        "s": "50002",
+        "t": "50001",
+        "version": "1.1"
+    },
+    "electrumx02.zcoin.io": {
+        "pruning": "-",
+        "s": "50002",
+        "t": "50001",
+        "version": "1.1"
+    },
     "51.15.82.184": {
         "pruning": "-",
         "s": "50002",
