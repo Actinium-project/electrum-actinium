@@ -7,7 +7,7 @@ Electrum-XZC - Lightweight Zcoin client
   Original Author: Thomas Voegtlin
   Port Maintainer: Pooler, SN
   Language: Python
-  Homepage: https://electrum.zcoin.io/
+  Homepage: https://zcoin.io/
 
 
 

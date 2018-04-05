@@ -85,6 +85,6 @@ setup(
     author="Thomas Voegtlin",
     author_email="thomasv@electrum.org",
     license="MIT Licence",
-    url="http://electrum-xzc.org",
+    url="http://zcoin.io",
     long_description="""Lightweight Zcoin Wallet"""
 )
