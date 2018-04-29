@@ -437,6 +437,8 @@ mainnet_block_explorers = {
                         {'tx': 'tx.dws?', 'addr': 'address.dws?'}),
     'insight.zcoin.io': ('https://insight.zcoin.io',
                         {'tx': 'tx', 'addr': 'address'}),
+    'bchain.info': ('https://bchain.info/XZC',
+                        {'tx': 'tx', 'addr': 'addr'}),
 }
 
 testnet_block_explorers = {
