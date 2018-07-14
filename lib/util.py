@@ -451,7 +451,7 @@ def block_explorer_info():
     return testnet_block_explorers if bitcoin.NetworkConstants.TESTNET else mainnet_block_explorers
 
 def block_explorer(config):
-    return config.get('block_explorer', 'explorer.zcoin.io')
+    return config.get('block_explorer', 'insight.zcoin.io')
 
 def block_explorer_tuple(config):
     return block_explorer_info().get(block_explorer(config))
