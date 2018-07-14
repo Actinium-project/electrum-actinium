@@ -19,7 +19,7 @@ For example:
 
 
 ```
-$ sudo apt-get install wine-development dirmngr gnupg2
+$ sudo apt-get install wine-development dirmngr gnupg2 p7zip-full wget gettext
 $ sudo ln -sf /usr/bin/wine-development /usr/local/bin/wine
 $ wine --version
  wine-2.0 (Debian 2.0-3+b2)
