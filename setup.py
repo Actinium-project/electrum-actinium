@@ -55,7 +55,6 @@ setup(
         'electrum_xzc_plugins.cosigner_pool',
         'electrum_xzc_plugins.email_requests',
         'electrum_xzc_plugins.hw_wallet',
-        'electrum_xzc_plugins.keepkey',
         'electrum_xzc_plugins.labels',
         'electrum_xzc_plugins.ledger',
         'electrum_xzc_plugins.trezor',

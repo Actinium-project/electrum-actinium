@@ -17,7 +17,6 @@ home = 'C:\\electrum-xzc\\'
 hiddenimports = []
 hiddenimports += collect_submodules('trezorlib')
 hiddenimports += collect_submodules('btchip')
-hiddenimports += collect_submodules('keepkeylib')
 hiddenimports += collect_submodules('websocket')
 
 # Add libusb binary
@@ -38,7 +37,6 @@ datas = [
 ]
 datas += collect_data_files('trezorlib')
 datas += collect_data_files('btchip')
-datas += collect_data_files('keepkeylib')
 
 # We don't put these files in to actually include them in the script but to make the Analysis method scan them for imports
 a = Analysis([home+'electrum-xzc',
@@ -55,7 +53,6 @@ a = Analysis([home+'electrum-xzc',
               home+'plugins/email_requests/qt.py',
               home+'plugins/trezor/client.py',
               home+'plugins/trezor/qt.py',
-              home+'plugins/keepkey/qt.py',
               home+'plugins/ledger/qt.py',
               #home+'packages/requests/utils.py'
               ],

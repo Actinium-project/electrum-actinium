@@ -24,7 +24,6 @@ block_cipher = None
 hiddenimports = []
 hiddenimports += collect_submodules('trezorlib')
 hiddenimports += collect_submodules('btchip')
-hiddenimports += collect_submodules('keepkeylib')
 hiddenimports += collect_submodules('websocket')
 
 datas = [
@@ -39,7 +38,6 @@ datas = [
 ]
 datas += collect_data_files('trezorlib')
 datas += collect_data_files('btchip')
-datas += collect_data_files('keepkeylib')
 
 # Add libusb so Trezor will work
 binaries = [(electrum + "contrib/build-osx/libusb-1.0.dylib", ".")]
@@ -61,7 +59,6 @@ a = Analysis([electrum+MAIN_SCRIPT,
               electrum+'plugins/email_requests/qt.py',
               electrum+'plugins/trezor/client.py',
               electrum+'plugins/trezor/qt.py',
-              electrum+'plugins/keepkey/qt.py',
               electrum+'plugins/ledger/qt.py',
               ],
              binaries=binaries,
