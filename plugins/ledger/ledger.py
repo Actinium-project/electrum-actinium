@@ -3,14 +3,14 @@ import hashlib
 import sys
 import traceback
 
-from electrum_xzc import bitcoin
-from electrum_xzc.bitcoin import TYPE_ADDRESS, int_to_hex, var_int
-from electrum_xzc.i18n import _
-from electrum_xzc.plugins import BasePlugin
-from electrum_xzc.keystore import Hardware_KeyStore
-from electrum_xzc.transaction import Transaction
+from electrum_acm import bitcoin
+from electrum_acm.bitcoin import TYPE_ADDRESS, int_to_hex, var_int
+from electrum_acm.i18n import _
+from electrum_acm.plugins import BasePlugin
+from electrum_acm.keystore import Hardware_KeyStore
+from electrum_acm.transaction import Transaction
 from ..hw_wallet import HW_PluginBase
-from electrum_xzc.util import print_error, is_verbose, bfh, bh2u, versiontuple
+from electrum_acm.util import print_error, is_verbose, bfh, bh2u, versiontuple
 
 try:
     import hid
@@ -27,7 +27,7 @@ except ImportError:
 
 MSG_NEEDS_FW_UPDATE_GENERIC = _('Firmware version too old. Please update at') + \
                       ' https://www.ledgerwallet.com'
-MSG_NEEDS_FW_UPDATE_SEGWIT = _('Firmware version (or "Zcoin" app) too old for Segwit support. Please update at') + \
+MSG_NEEDS_FW_UPDATE_SEGWIT = _('Firmware version (or "Actinium" app) too old for Segwit support. Please update at') + \
                       ' https://www.ledgerwallet.com'
 MULTI_OUTPUT_SUPPORT = '1.1.4'
 SEGWIT_SUPPORT = '1.1.9'
@@ -185,7 +185,7 @@ class Ledger_Client():
                 self.perform_hw1_preflight()
             except BTChipException as e:
                 if (e.sw == 0x6d00 or e.sw == 0x6700):
-                    raise BaseException(_("Device not in Zcoin mode")) from e
+                    raise BaseException(_("Device not in Actinium mode")) from e
                 raise e
             self.preflightDone = True
 

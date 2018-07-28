@@ -24,10 +24,10 @@
 # SOFTWARE.
 import webbrowser
 
-from electrum_xzc.i18n import _
-from electrum_xzc.bitcoin import is_address
-from electrum_xzc.util import block_explorer_URL
-from electrum_xzc.plugins import run_hook
+from electrum_acm.i18n import _
+from electrum_acm.bitcoin import is_address
+from electrum_acm.util import block_explorer_URL
+from electrum_acm.plugins import run_hook
 from PyQt5.QtGui import *
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import (

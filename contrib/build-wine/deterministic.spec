@@ -11,7 +11,7 @@ else:
     raise BaseException('no name')
 
 
-home = 'C:\\electrum-xzc\\'
+home = 'C:\\electrum-actinium\\'
 
 # see https://github.com/pyinstaller/pyinstaller/issues/2005
 hiddenimports = []
@@ -26,20 +26,20 @@ binaries = [("c:/python3.5.4/libusb-1.0.dll", ".")]
 binaries += [b for b in collect_dynamic_libs('PyQt5') if 'qwindowsvista' in b[0]]
 
 datas = [
-    (home+'lib/currencies.json', 'electrum_xzc'),
-    (home+'lib/servers.json', 'electrum_xzc'),
-    (home+'lib/checkpoints.json', 'electrum_xzc'),
-    (home+'lib/servers_testnet.json', 'electrum_xzc'),
-    (home+'lib/checkpoints_testnet.json', 'electrum_xzc'),
-    (home+'lib/wordlist/english.txt', 'electrum_xzc/wordlist'),
-    (home+'lib/locale', 'electrum_xzc/locale'),
-    (home+'plugins', 'electrum_xzc_plugins'),
+    (home+'lib/currencies.json', 'electrum_acm'),
+    (home+'lib/servers.json', 'electrum_acm'),
+    (home+'lib/checkpoints.json', 'electrum_acm'),
+    (home+'lib/servers_testnet.json', 'electrum_acm'),
+    (home+'lib/checkpoints_testnet.json', 'electrum_acm'),
+    (home+'lib/wordlist/english.txt', 'electrum_acm/wordlist'),
+    (home+'lib/locale', 'electrum_acm/locale'),
+    (home+'plugins', 'electrum_acm_plugins'),
 ]
 datas += collect_data_files('trezorlib')
 datas += collect_data_files('btchip')
 
 # We don't put these files in to actually include them in the script but to make the Analysis method scan them for imports
-a = Analysis([home+'electrum-xzc',
+a = Analysis([home+'electrum-actinium',
               home+'gui/qt/main_window.py',
               home+'gui/text.py',
               home+'lib/util.py',
@@ -83,7 +83,7 @@ exe_standalone = EXE(
     a.scripts,
     a.binaries,
     a.datas, 
-    name=os.path.join('build\\pyi.win32\\electrum-xzc', cmdline_name + ".exe"),
+    name=os.path.join('build\\pyi.win32\\electrum-actinium', cmdline_name + ".exe"),
     debug=False,
     strip=None,
     upx=False,
@@ -96,7 +96,7 @@ exe_portable = EXE(
     a.scripts,
     a.binaries,
     a.datas + [ ('is_portable', 'README.md', 'DATA' ) ],
-    name=os.path.join('build\\pyi.win32\\electrum-xzc', cmdline_name + "-portable.exe"),
+    name=os.path.join('build\\pyi.win32\\electrum-actinium', cmdline_name + "-portable.exe"),
     debug=False,
     strip=None,
     upx=False,
@@ -110,7 +110,7 @@ exe_dependent = EXE(
     pyz,
     a.scripts,
     exclude_binaries=True,
-    name=os.path.join('build\\pyi.win32\\electrum-xzc', cmdline_name),
+    name=os.path.join('build\\pyi.win32\\electrum-actinium', cmdline_name),
     debug=False,
     strip=None,
     upx=False,
@@ -127,4 +127,4 @@ coll = COLLECT(
     debug=False,
     icon=home+'icons/electrum.ico',
     console=False,
-    name=os.path.join('dist', 'electrum-xzc'))
+    name=os.path.join('dist', 'electrum-actinium'))

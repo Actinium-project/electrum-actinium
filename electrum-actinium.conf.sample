@@ -1,10 +1,10 @@
-# Configuration file for the electrum client
+# Configuration file for the electrum actinium client
 # Settings defined here are shared across wallets
 #
-# copy this file to /etc/electrum-xzc.conf if you want read-only settings
+# copy this file to /etc/electrum-actinium.conf if you want read-only settings
 
 [client]
-server = 45.63.92.224:50001:t
+server = 104.156.231.46:t
 proxy = None
 gap_limit = 5
 # booleans use python syntax

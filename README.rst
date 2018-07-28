@@ -1,13 +1,13 @@
-Electrum-XZC - Lightweight Zcoin client
+Electrum-Actinium - Lightweight Actinium client
 =======================================
 
 ::
 
   Licence: MIT Licence
   Original Author: Thomas Voegtlin
-  Port Maintainer: Pooler, SN
+  Port Maintainer: The Actinium Project
   Language: Python
-  Homepage: https://zcoin.io/
+  Homepage: https://actinium.org
 
 
 
@@ -27,7 +27,7 @@ Electrum from its root directory, without installing it on your
 system; all the python dependencies are included in the 'packages'
 directory. To run Electrum from its root directory, just do::
 
-    ./electrum-xzc
+    ./electrum-actinium
 
 You can also install Electrum on your system, by running this command::
 
@@ -64,8 +64,8 @@ Install dependencies::
 
 Check out the code from Github::
 
-    git clone git://github.com/zcoinofficial/electrum-xzc.git
-    cd electrum-xzc
+    git clone git://github.com/zcoinofficial/electrum-actinium.git
+    cd electrum-actinium
 
 Install lyra2z lib::
 

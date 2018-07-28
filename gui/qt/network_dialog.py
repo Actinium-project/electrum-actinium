@@ -30,10 +30,10 @@ from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 import PyQt5.QtCore as QtCore
 
-from electrum_xzc.i18n import _
-from electrum_xzc.bitcoin import NetworkConstants
-from electrum_xzc.util import print_error
-from electrum_xzc.network import serialize_server, deserialize_server
+from electrum_acm.i18n import _
+from electrum_acm.bitcoin import NetworkConstants
+from electrum_acm.util import print_error
+from electrum_acm.network import serialize_server, deserialize_server
 
 from .util import *
 

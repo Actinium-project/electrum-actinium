@@ -11,9 +11,9 @@ lyra2z_hash_module = Extension('lyra2z_hash',
 
 setup (name = 'lyra2z_hash',
        version = '0.1.0',
-       author_email = 'devwarrior.zcoin@gmail.com',
-       author = 'devwarrior',
-       url = 'https://github.com/devwarrior777/lyra2z-py',
-       description = 'Bindings for Lyra2Z proof of work used by Zcoin',
+       author_email = 'info@actinium.org',
+       author = 'actinium',
+       url = 'https://github.com/Actinium-project/Actinium',
+       description = 'Bindings for Lyra2Z proof of work used by Actinium',
        ext_modules = [lyra2z_hash_module])
 

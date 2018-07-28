@@ -83,8 +83,8 @@ class TestWalletKeystoreAddressIntegrity(unittest.TestCase):
         w = self._create_standard_wallet(ks)
         self.assertEqual(w.txin_type, 'p2wpkh')
 
-        self.assertEqual(w.get_receiving_addresses()[0], 'xzc1q3g5tmkmlvxryhh843v4dz026avatc0zz8xd49e')
-        self.assertEqual(w.get_change_addresses()[0], 'xzc1qdy94n2q5qcp0kg7v9yzwe6wvfkhnvyzjazfzj3')
+        self.assertEqual(w.get_receiving_addresses()[0], 'acm1q3g5tmkmlvxryhh843v4dz026avatc0zz8xd49e')
+        self.assertEqual(w.get_change_addresses()[0], 'acm1qdy94n2q5qcp0kg7v9yzwe6wvfkhnvyzjazfzj3')
 
     @mock.patch.object(storage.WalletStorage, '_write')
     def test_electrum_seed_old(self, mock_write):
@@ -156,8 +156,8 @@ class TestWalletKeystoreAddressIntegrity(unittest.TestCase):
         w = self._create_standard_wallet(ks)
         self.assertEqual(w.txin_type, 'p2wpkh')
 
-        self.assertEqual(w.get_receiving_addresses()[0], 'xzc1qcr8te4kr609gcawutmrza0j4xv80jy8z4nqduv')
-        self.assertEqual(w.get_change_addresses()[0], 'xzc1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0')
+        self.assertEqual(w.get_receiving_addresses()[0], 'acm1qcr8te4kr609gcawutmrza0j4xv80jy8z4nqduv')
+        self.assertEqual(w.get_change_addresses()[0], 'acm1q8c6fshw2dlwun7ekn9qwf37cu2rn755u9ym7p0')
 
     @mock.patch.object(storage.WalletStorage, '_write')
     def test_electrum_multisig_seed_standard(self, mock_write):
@@ -200,8 +200,8 @@ class TestWalletKeystoreAddressIntegrity(unittest.TestCase):
         w = self._create_multisig_wallet(ks1, ks2)
         self.assertEqual(w.txin_type, 'p2wsh')
 
-        self.assertEqual(w.get_receiving_addresses()[0], 'xzc1qvzezdcv6vs5h45ugkavp896e0nde5c5lg5h0fwe2xyfhnpkxq6gqa9a79a')
-        self.assertEqual(w.get_change_addresses()[0], 'xzc1qxqf840dqswcmu7a8v82fj6ej0msx08flvuy6kngr7axstjcaq6usxndfdg')
+        self.assertEqual(w.get_receiving_addresses()[0], 'acm1qvzezdcv6vs5h45ugkavp896e0nde5c5lg5h0fwe2xyfhnpkxq6gqa9a79a')
+        self.assertEqual(w.get_change_addresses()[0], 'acm1qxqf840dqswcmu7a8v82fj6ej0msx08flvuy6kngr7axstjcaq6usxndfdg')
 
     @mock.patch.object(storage.WalletStorage, '_write')
     def test_bip39_multisig_seed_bip45_standard(self, mock_write):

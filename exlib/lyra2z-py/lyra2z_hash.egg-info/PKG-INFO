@@ -1,11 +1,10 @@
 Metadata-Version: 1.0
 Name: lyra2z-hash
 Version: 0.1.0
-Summary: Bindings for Lyra2Z proof of work used by Zcoin
+Summary: Bindings for Lyra2Z proof of work used by Actinium
 Home-page: https://github.com/devwarrior777/lyra2z-py
 Author: devwarrior
-Author-email: devwarrior.zcoin@gmail.com
+Author-email: info@actinium.org
 License: UNKNOWN
-Description-Content-Type: UNKNOWN
 Description: UNKNOWN
 Platform: UNKNOWN

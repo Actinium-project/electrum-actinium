@@ -24,8 +24,8 @@
 # CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from electrum_xzc.plugins import BasePlugin, hook
-from electrum_xzc.i18n import _
+from electrum_acm.plugins import BasePlugin, hook
+from electrum_acm.i18n import _
 
 
 class HW_PluginBase(BasePlugin):

@@ -1,9 +1,9 @@
 include LICENCE RELEASE-NOTES AUTHORS
 include README.rst
-include electrum-xzc.conf.sample
-include electrum-xzc.desktop
+include electrum-actinium.conf.sample
+include electrum-actinium.desktop
 include *.py
-include electrum-xzc
+include electrum-actinium
 recursive-include lib *.py
 recursive-include gui *.py
 recursive-include plugins *.py

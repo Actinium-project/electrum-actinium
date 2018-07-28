@@ -43,7 +43,7 @@ if jnius:
 
 script_dir = os.path.dirname(os.path.realpath(__file__))
 is_bundle = getattr(sys, 'frozen', False)
-is_local = not is_bundle and os.path.exists(os.path.join(script_dir, "electrum-xzc.desktop"))
+is_local = not is_bundle and os.path.exists(os.path.join(script_dir, "electrum-actinium.desktop"))
 is_android = 'ANDROID_DATA' in os.environ
 
 # move this back to gui/kivy/__init.py once plugins are moved
@@ -82,23 +82,23 @@ if not is_android:
 # load local module as electrum
 if is_local or is_android:
     import imp
-    imp.load_module('electrum_xzc', *imp.find_module('lib'))
-    imp.load_module('electrum_xzc_gui', *imp.find_module('gui'))
-    imp.load_module('electrum_xzc_plugins', *imp.find_module('plugins'))
+    imp.load_module('electrum_acm', *imp.find_module('lib'))
+    imp.load_module('electrum_acm_gui', *imp.find_module('gui'))
+    imp.load_module('electrum_acm_plugins', *imp.find_module('plugins'))
 
 
 
-from electrum_xzc import bitcoin, util
-from electrum_xzc import SimpleConfig, Network
-from electrum_xzc.wallet import Wallet, Imported_Wallet
-from electrum_xzc.storage import WalletStorage
-from electrum_xzc.util import print_msg, print_stderr, json_encode, json_decode
-from electrum_xzc.util import set_verbosity, InvalidPassword
-from electrum_xzc.commands import get_parser, known_commands, Commands, config_variables
-from electrum_xzc import daemon
-from electrum_xzc import keystore
-from electrum_xzc.mnemonic import Mnemonic
-import electrum_xzc_plugins
+from electrum_acm import bitcoin, util
+from electrum_acm import SimpleConfig, Network
+from electrum_acm.wallet import Wallet, Imported_Wallet
+from electrum_acm.storage import WalletStorage
+from electrum_acm.util import print_msg, print_stderr, json_encode, json_decode
+from electrum_acm.util import set_verbosity, InvalidPassword
+from electrum_acm.commands import get_parser, known_commands, Commands, config_variables
+from electrum_acm import daemon
+from electrum_acm import keystore
+from electrum_acm.mnemonic import Mnemonic
+import electrum_acm_plugins
 
 # get password routine
 def prompt_password(prompt, confirm=True):
@@ -190,7 +190,7 @@ def init_daemon(config_options):
     storage = WalletStorage(config.get_wallet_path())
     if not storage.file_exists():
         print_msg("Error: Wallet file not found.")
-        print_msg("Type 'electrum-xzc create' to create a new wallet, or provide a path to a wallet with the -w option")
+        print_msg("Type 'electrum-actinium create' to create a new wallet, or provide a path to a wallet with the -w option")
         sys.exit(0)
     if storage.is_encrypted():
         if config.get('password'):
@@ -225,7 +225,7 @@ def init_cmdline(config_options, server):
 
     if cmd.requires_wallet and not storage.file_exists():
         print_msg("Error: Wallet file not found.")
-        print_msg("Type 'electrum-xzc create' to create a new wallet, or provide a path to a wallet with the -w option")
+        print_msg("Type 'electrum-actinium create' to create a new wallet, or provide a path to a wallet with the -w option")
         sys.exit(0)
 
     # important warning
@@ -294,7 +294,7 @@ def run_offline_command(config, config_options):
     return result
 
 def init_plugins(config, gui_name):
-    from electrum_xzc.plugins import Plugins
+    from electrum_acm.plugins import Plugins
     return Plugins(config, is_local or is_android, gui_name)
 
 
@@ -347,7 +347,7 @@ if __name__ == '__main__':
         config_options['portable'] = True
 
     if config_options.get('portable'):
-        config_options['electrum_path'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum-xzc_data')
+        config_options['electrum_path'] = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'electrum-actinium_data')
 
     # kivy sometimes freezes when we write to sys.stderr
     set_verbosity(config_options.get('verbose') and config_options.get('gui')!='kivy')
@@ -355,7 +355,7 @@ if __name__ == '__main__':
     # check uri
     uri = config_options.get('url')
     if uri:
-        if not uri.startswith('zcoin:'):
+        if not uri.startswith('Actinium:'):
             print_stderr('unknown command:', uri)
             sys.exit(1)
         config_options['url'] = uri
@@ -400,13 +400,13 @@ if __name__ == '__main__':
                 d = daemon.Daemon(config, fd, False)
                 d.start()
                 if config.get('websocket_server'):
-                    from electrum_xzc import websockets
+                    from electrum_acm import websockets
                     websockets.WebSocketServer(config, d.network).start()
                 if config.get('requests_dir'):
                     path = os.path.join(config.get('requests_dir'), 'index.html')
                     if not os.path.exists(path):
                         print("Requests directory not configured.")
-                        print("You can configure it using https://github.com/sn-ntu/electrum-xzc-merchant")
+                        print("You can configure it using https://github.com/sn-ntu/electrum-actinium-merchant")
                         sys.exit(1)
                 d.join()
                 sys.exit(0)
@@ -428,7 +428,7 @@ if __name__ == '__main__':
         else:
             cmd = known_commands[cmdname]
             if cmd.requires_network:
-                print_msg("Daemon not running; try 'electrum-xzc daemon start'")
+                print_msg("Daemon not running; try 'electrum-actinium daemon start'")
                 sys.exit(1)
             else:
                 init_plugins(config, 'cmdline')

@@ -40,7 +40,7 @@ def inv_dict(d):
     return {v: k for k, v in d.items()}
 
 
-base_units = {'XZC':8, 'mXZC':5, 'uXZC':2}
+base_units = {'ACM':8, 'mACM':5, 'uXZC':2}
 fee_levels = [_('Within 25 blocks'), _('Within 10 blocks'), _('Within 5 blocks'), _('Within 2 blocks'), _('In the next block')]
 
 def normalize_version(v):
@@ -237,7 +237,7 @@ def android_data_dir():
     return PythonActivity.mActivity.getFilesDir().getPath() + '/data'
 
 def android_headers_dir():
-    d = android_ext_dir() + '/org.electrum_xzc.electrum_xzc'
+    d = android_ext_dir() + '/org.electrum_acm.electrum_acm'
     if not os.path.exists(d):
         os.mkdir(d)
     return d
@@ -246,7 +246,7 @@ def android_check_data_dir():
     """ if needed, move old directory to sandbox """
     ext_dir = android_ext_dir()
     data_dir = android_data_dir()
-    old_electrum_dir = ext_dir + '/electrum-xzc'
+    old_electrum_dir = ext_dir + '/electrum-actinium'
     if not os.path.exists(data_dir) and os.path.exists(old_electrum_dir):
         import shutil
         new_headers_path = android_headers_dir() + '/blockchain_headers'
@@ -327,11 +327,11 @@ def user_dir():
     if 'ANDROID_DATA' in os.environ:
         return android_check_data_dir()
     elif os.name == 'posix':
-        return os.path.join(os.environ["HOME"], ".electrum-xzc")
+        return os.path.join(os.environ["HOME"], ".electrum-actinium")
     elif "APPDATA" in os.environ:
-        return os.path.join(os.environ["APPDATA"], "Electrum-XZC")
+        return os.path.join(os.environ["APPDATA"], "Electrum-Actinium")
     elif "LOCALAPPDATA" in os.environ:
-        return os.path.join(os.environ["LOCALAPPDATA"], "Electrum-XZC")
+        return os.path.join(os.environ["LOCALAPPDATA"], "Electrum-Actinium")
     else:
         #raise Exception("No home directory found in environment variables.")
         return
@@ -431,20 +431,12 @@ def time_difference(distance_in_time, include_seconds):
         return "over %d years" % (round(distance_in_minutes / 525600))
 
 mainnet_block_explorers = {
-    'explorer.zcoin.io': ('https://explorer.zcoin.io',
-                        {'tx': 'tx', 'addr': 'address'}),
-    'chainz.cryptoid.info': ('https://chainz.cryptoid.info/xzc',
-                        {'tx': 'tx.dws?', 'addr': 'address.dws?'}),
-    'insight.zcoin.io': ('https://insight.zcoin.io',
-                        {'tx': 'tx', 'addr': 'address'}),
-    'CryptoCore': ('https://xzc.ccore.online',
-                        {'tx': 'transaction', 'addr': 'address'}),
-    'bchain.info': ('https://bchain.info/XZC',
-                        {'tx': 'tx', 'addr': 'addr'}),
+    'explorer.actinum.org': ('https://explorer2.actinium.org',
+                        {'tx': 'tx', 'addr': 'address'})
 }
 
 testnet_block_explorers = {
-    'testexplorer.zcoin.io': ('http://testexplorer.zcoin.io',
+    'testexplorer.actinium.org': ('http://testexplorer.actinium.org',
                         {'tx': 'tx', 'addr': 'address'}),
 }
 
@@ -453,7 +445,7 @@ def block_explorer_info():
     return testnet_block_explorers if bitcoin.NetworkConstants.TESTNET else mainnet_block_explorers
 
 def block_explorer(config):
-    return config.get('block_explorer', 'insight.zcoin.io')
+    return config.get('block_explorer', 'explorer.actinium.org')
 
 def block_explorer_tuple(config):
     return block_explorer_info().get(block_explorer(config))
@@ -478,12 +470,12 @@ def parse_URI(uri, on_pr=None):
 
     if ':' not in uri:
         if not bitcoin.is_address(uri):
-            raise BaseException("Not a zcoin address")
+            raise BaseException("Not a actinium address")
         return {'address': uri}
 
     u = urllib.parse.urlparse(uri)
-    if u.scheme != 'zcoin':
-        raise BaseException("Not a zcoin URI")
+    if u.scheme != 'actinium':
+        raise BaseException("Not a actinium URI")
     address = u.path
 
     # python for android fails to parse query
@@ -500,7 +492,7 @@ def parse_URI(uri, on_pr=None):
     out = {k: v[0] for k, v in pq.items()}
     if address:
         if not bitcoin.is_address(address):
-            raise BaseException("Invalid zcoin address:" + address)
+            raise BaseException("Invalid actinium address:" + address)
         out['address'] = address
     if 'amount' in out:
         am = out['amount']
@@ -550,7 +542,7 @@ def create_URI(addr, amount, message):
         query.append('amount=%s'%format_satoshis_plain(amount))
     if message:
         query.append('message=%s'%urllib.parse.quote(message))
-    p = urllib.parse.ParseResult(scheme='zcoin', netloc='', path=addr, params='', query='&'.join(query), fragment='')
+    p = urllib.parse.ParseResult(scheme='actinium', netloc='', path=addr, params='', query='&'.join(query), fragment='')
     return urllib.parse.urlunparse(p)
 
 

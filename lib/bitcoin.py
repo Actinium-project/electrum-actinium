@@ -74,9 +74,9 @@ TPUB_HEADERS = {
     'standard': 0x043587cf
 }
 
-# class Zcoin(Coin):
-#     NAME = "Zcoin"
-#     SHORTNAME = "XZC"
+# class Actinium(Coin):
+#     NAME = "Actinium"
+#     SHORTNAME = "ACM"
 #     NET = "mainnet"
 #     P2PKH_VERBYTE = bytes.fromhex("52")
 #     P2SH_VERBYTES = [bytes.fromhex("07")]
@@ -95,11 +95,11 @@ class NetworkConstants:
     @classmethod
     def set_mainnet(cls):
         cls.TESTNET = False
-        cls.WIF_PREFIX = 210
-        cls.ADDRTYPE_P2PKH = 82  # 0x52
-        cls.ADDRTYPE_P2SH = 7  # 0x07
-        cls.SEGWIT_HRP = "xzc"
-        cls.GENESIS = "4381deb85b1b2c9843c222944b616d997516dcbd6a964e1eaf0def0830695233"
+        cls.WIF_PREFIX = 181
+        cls.ADDRTYPE_P2PKH = 53  # 0x52
+        cls.ADDRTYPE_P2SH = 55  # 0x07
+        cls.SEGWIT_HRP = "acm"
+        cls.GENESIS = "28d77872e23714562f49a1be792c276623c1bbe3fdcf21b6035cfde78b00b824"
         cls.DEFAULT_PORTS = {'t': '50001', 's': '50002'}
         cls.DEFAULT_SERVERS = read_json('servers.json', {})
         cls.CHECKPOINTS = read_json('checkpoints.json', [])
@@ -107,11 +107,11 @@ class NetworkConstants:
     @classmethod
     def set_testnet(cls):
         cls.TESTNET = True
-        cls.WIF_PREFIX = 185
-        cls.ADDRTYPE_P2PKH = 65
-        cls.ADDRTYPE_P2SH = 178
-        cls.SEGWIT_HRP = "txzc"
-        cls.GENESIS = "7ac038c193c2158c428c59f9ae0c02a07115141c6e9dc244ae96132e99b4e642"
+        cls.WIF_PREFIX = 171
+        cls.ADDRTYPE_P2PKH = 43
+        cls.ADDRTYPE_P2SH = 196
+        cls.SEGWIT_HRP = "tacm"
+        cls.GENESIS = "7c617cc84dc2bff1497836216d6b850cc4e871359ab1afc2d19ef099f9f81f1b"
         cls.DEFAULT_PORTS = {'t':'51001', 's':'51002'}
         cls.DEFAULT_SERVERS = read_json('servers_testnet.json', {})
         cls.CHECKPOINTS = read_json('checkpoints_testnet.json', [])
@@ -125,7 +125,7 @@ FEE_STEP = 100000
 MAX_FEE_RATE = 1000000
 FEE_TARGETS = [25, 10, 5, 2]
 
-COINBASE_MATURITY = 100
+COINBASE_MATURITY = 101
 COIN = 100000000
 
 # supported types of transction outputs

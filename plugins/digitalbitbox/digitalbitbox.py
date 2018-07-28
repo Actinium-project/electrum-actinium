@@ -4,15 +4,15 @@
 #
 
 try:
-    import electrum_xzc as electrum
-    from electrum_xzc.bitcoin import TYPE_ADDRESS, push_script, var_int, msg_magic, Hash, verify_message, pubkey_from_signature, point_to_ser, public_key_to_p2pkh, EncodeAES, DecodeAES, MyVerifyingKey
-    from electrum_xzc.bitcoin import serialize_xpub, deserialize_xpub
-    from electrum_xzc.transaction import Transaction
-    from electrum_xzc.i18n import _
-    from electrum_xzc.keystore import Hardware_KeyStore
+    import electrum_acm as electrum
+    from electrum_acm.bitcoin import TYPE_ADDRESS, push_script, var_int, msg_magic, Hash, verify_message, pubkey_from_signature, point_to_ser, public_key_to_p2pkh, EncodeAES, DecodeAES, MyVerifyingKey
+    from electrum_acm.bitcoin import serialize_xpub, deserialize_xpub
+    from electrum_acm.transaction import Transaction
+    from electrum_acm.i18n import _
+    from electrum_acm.keystore import Hardware_KeyStore
     from ..hw_wallet import HW_PluginBase
-    from electrum_xzc.util import print_error, to_string, UserCancelled
-    from electrum_xzc.base_wizard import ScriptTypeNotSupported
+    from electrum_acm.util import print_error, to_string, UserCancelled
+    from electrum_acm.base_wizard import ScriptTypeNotSupported
 
     import time
     import hid
@@ -278,7 +278,7 @@ class DigitalBitbox_Client():
 
     def dbb_generate_wallet(self):
         key = self.stretch_key(self.password)
-        filename = ("Electrum-XZC-" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".pdf").encode('utf8')
+        filename = ("Electrum-Actinium-" + time.strftime("%Y-%m-%d-%H-%M-%S") + ".pdf").encode('utf8')
         msg = b'{"seed":{"source": "create", "key": "%s", "filename": "%s", "entropy": "%s"}}' % (key, filename, b'Digital Bitbox Electrum Plugin')
         reply = self.hid_send_encrypt(msg)
         if 'error' in reply:

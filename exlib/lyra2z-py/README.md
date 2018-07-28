@@ -3,7 +3,7 @@
 Python C module for lyra2z hashing 
 ----------------------------------
 
-Notes for Zcoin:
+Notes for Actinium:
 ----------------
 
 Module: lyra2z_hash
@@ -14,8 +14,8 @@ From a previous readme from ocminer (updated):
 
 Requirements:
 -------------
-In order to run P2Pool and other Python based pools with the Zcoin network, you would need to build and install the
-lyra2z_hash module for Python that includes the lyra2z proof of work code that Zcoin uses for hashes.
+In order to run P2Pool and other Python based pools with the Actinium network, you would need to build and install the
+lyra2z_hash module for Python that includes the lyra2z proof of work code that Actinium uses for hashes.
 
 Linux:
 

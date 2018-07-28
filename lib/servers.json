@@ -1,47 +1,11 @@
 {
-    "electrumx01.zcoin.io": {
+    "electrum1.actinium.org": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",
         "version": "1.1"
     },
-    "electrumx02.zcoin.io": {
-        "pruning": "-",
-        "s": "50002",
-        "t": "50001",
-        "version": "1.1"
-    },
-    "electrumx03.zcoin.io": {
-        "pruning": "-",
-        "s": "50002",
-        "t": "50001",
-        "version": "1.1"
-    },
-    "51.15.82.184": {
-        "pruning": "-",
-        "s": "50002",
-        "t": "50001",
-        "version": "1.1"
-    },
-    "45.63.92.224": {
-        "pruning": "-",
-        "s": "50002",
-        "t": "50001",
-        "version": "1.1"
-    },
-    "45.77.67.235": {
-        "pruning": "-",
-        "s": "50002",
-        "t": "50001",
-        "version": "1.1"
-    },
-    "45.77.168.250": {
-        "pruning": "-",
-        "s": "50002",
-        "t": "50001",
-        "version": "1.1"
-    },
-    "47.75.76.176": {
+    "electrum2.actinium.org": {
         "pruning": "-",
         "s": "50002",
         "t": "50001",

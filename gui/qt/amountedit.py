@@ -5,7 +5,7 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import (QLineEdit, QStyle, QStyleOptionFrame)
 
 from decimal import Decimal
-from electrum_xzc.util import format_satoshis_plain
+from electrum_acm.util import format_satoshis_plain
 
 
 class MyLineEdit(QLineEdit):
@@ -82,9 +82,9 @@ class BTCAmountEdit(AmountEdit):
     def _base_unit(self):
         p = self.decimal_point()
         if p == 8:
-            return 'XZC'
+            return 'ACM'
         if p == 5:
-            return 'mXZC'
+            return 'mACM'
         if p == 2:
             return 'bits'
         raise Exception('Unknown base unit')
@@ -108,7 +108,7 @@ class FeerateEdit(BTCAmountEdit):
     def _base_unit(self):
         p = self.decimal_point()
         if p == 2:
-            return 'mXZC/kB'
+            return 'mACM/kB'
         if p == 0:
             return 'sat/byte'
         raise Exception('Unknown base unit')

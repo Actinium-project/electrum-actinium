@@ -37,14 +37,14 @@ from PyQt5.QtWidgets import *
 from PyQt5.QtCore import *
 import PyQt5.QtCore as QtCore
 
-from electrum_xzc.i18n import _, set_language
-from electrum_xzc.plugins import run_hook
-from electrum_xzc import WalletStorage
-# from electrum_xzc.synchronizer import Synchronizer
-# from electrum_xzc.verifier import SPV
-# from electrum_xzc.util import DebugMem
-from electrum_xzc.util import UserCancelled, print_error
-# from electrum_xzc.wallet import Abstract_Wallet
+from electrum_acm.i18n import _, set_language
+from electrum_acm.plugins import run_hook
+from electrum_acm import WalletStorage
+# from electrum_acm.synchronizer import Synchronizer
+# from electrum_acm.verifier import SPV
+# from electrum_acm.util import DebugMem
+from electrum_acm.util import UserCancelled, print_error
+# from electrum_acm.wallet import Abstract_Wallet
 
 from .installwizard import InstallWizard, GoBack
 
@@ -107,7 +107,7 @@ class ElectrumGui:
         # init tray
         self.dark_icon = self.config.get("dark_icon", False)
         self.tray = QSystemTrayIcon(self.tray_icon(), None)
-        self.tray.setToolTip('Electrum-XZC')
+        self.tray.setToolTip('Electrum-Actinium')
         self.tray.activated.connect(self.tray_activated)
         self.build_tray_menu()
         self.tray.show()
@@ -129,7 +129,7 @@ class ElectrumGui:
             submenu.addAction(_("Close"), window.close)
         m.addAction(_("Dark/Light"), self.toggle_tray_icon)
         m.addSeparator()
-        m.addAction(_("Exit Electrum-XZC"), self.close)
+        m.addAction(_("Exit Electrum-Actinium"), self.close)
 
     def tray_icon(self):
         if self.dark_icon:

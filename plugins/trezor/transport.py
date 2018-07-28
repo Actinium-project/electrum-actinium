@@ -1,4 +1,4 @@
-from electrum_xzc.util import PrintError
+from electrum_acm.util import PrintError
 
 
 class TrezorTransport(PrintError):

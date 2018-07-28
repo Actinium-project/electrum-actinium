@@ -1,4 +1,4 @@
-from electrum_xzc.i18n import _
+from electrum_acm.i18n import _
 
 fullname = 'TREZOR Wallet'
 description = _('Provides support for TREZOR hardware wallet')
