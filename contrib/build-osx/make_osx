@@ -21,7 +21,7 @@ VERSION=`git describe --tags`
 PYTHON_VERSION=3.6.4
 BUILDDIR=/tmp/electrum-actinium-build
 PACKAGE=Electrum-Actinium
-GIT_REPO=https://github.com/zcoinofficial/electrum-actinium
+GIT_REPO=https://github.com/Actinium-project/electrum-actinium
 
 info "Installing Python $PYTHON_VERSION"
 export PATH="~/.pyenv/bin:~/.pyenv/shims:~/Library/Python/3.6/bin:$PATH"
