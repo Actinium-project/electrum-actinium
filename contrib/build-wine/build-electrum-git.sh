@@ -25,7 +25,7 @@ for repo in electrum-actinium electrum-actinium-locale electrum-actinium-icons; 
 	git checkout master
 	cd ..
     else
-	URL=https://github.com/zcoinofficial/$repo.git
+	URL=https://github.com/Actinium-project/$repo.git
 	git clone -b master $URL $repo
     fi
 done
