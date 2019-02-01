@@ -300,7 +300,7 @@ class ElectrumWindow(App):
         if is_address(data):
             self.set_URI(data)
             return
-        if data.startswith('Actinium:'):
+        if data.startswith('actinium:'):
             self.set_URI(data)
             return
         # try to decode transaction
